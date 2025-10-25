@@ -1,12 +1,9 @@
 from flask import Flask
 from config import Config
-<<<<<<< HEAD
 from .extensions import db, login_manager
 from .models import User
-=======
 from .extensions import db
 from flask_login import LoginManager
->>>>>>> ef812f3e8c8748c3e1e620ed5bff9fbbaf5db251
 
 def create_app(config_class=Config):
     app = Flask(__name__)
