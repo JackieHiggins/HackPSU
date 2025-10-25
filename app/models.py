@@ -1,0 +1,11 @@
+from .extensions import db
+from datetime import datetime
+
+# The User model represents the 'user' table in the database.
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256))
+
+
