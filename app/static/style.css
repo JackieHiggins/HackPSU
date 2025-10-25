@@ -49,6 +49,16 @@ body {
     gap: 0.5rem;
 }
 
+.logo {
+    height: 40px;
+    width: auto;
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
 .app-name {
     font-size: 1.5rem;
     font-weight: 600;
