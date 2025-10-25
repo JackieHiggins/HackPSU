@@ -1,20 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="home-container" style="text-align:center;">
-    <h1>Welcome to EmojiStory</h1>
-    <p class="intro">
-        Create short stories inspired by fun daily emojis!
-    </p>
+<div class="home-container">
+    <div class="content-card">
+        <h1 class="section-title">Welcome to EmojiStory</h1>
+        <p class="intro">
+            Create short stories inspired by fun daily emojis!
+        </p>
 
-    {% if not username %}
-        <p>
-            <a href="{{ url_for('login') }}" class="cta-button">Sign In or Register</a> 
-            to start writing your own stories.
-        </p>
-    {% else %}
-        <p>
-            <a href="{{ url_for('dashboard') }}" class="cta-button">Go to Your Dashboard</a>
-        </p>
-    {% endif %}
+        <div class="emoji-container">
+            {% for emoji in emojis %}
+                <div class="emoji">{{ emoji }}</div>
+            {% endfor %}
+        </div>
+
+        <p class="message">Please sign in to post your story!</p>
+
+        {% if not username %}
+            <div class="cta-section">
+                <a href="{{ url_for('main.login') }}" class="cta-button">Sign In or Register</a>
+            </div>
+        {% else %}
+            <div class="cta-section">
+                <a href="{{ url_for('main.dashboard') }}" class="cta-button">Go to Your Dashboard</a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

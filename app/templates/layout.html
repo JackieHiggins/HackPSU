@@ -14,8 +14,8 @@
     <header class="header">
         <div class="header-left">
             <!-- App Logo -->
-            <a href="/" class="logo-link">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+            <a href="{{ url_for('main.index') }}" class="logo-link">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo">
                 <span class="app-name">EmojiStory</span>
             </a>
         </div>
@@ -25,10 +25,10 @@
                 <!-- When logged in: show username, avatar, logout -->
                 <span class="username">{{ username }}</span>
                 <img src="{{ url_for('static', filename='default-user.png') }}" alt="User Avatar" class="avatar">
-                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+                <a href="{{ url_for('main.logout') }}" class="nav-link">Logout</a>
             {% else %}
                 <!-- When not logged in: show sign-in link -->
-                <a href="{{ url_for('login') }}" class="nav-link">Sign In</a>
+                <a href="{{ url_for('main.login') }}" class="nav-link">Sign In</a>
             {% endif %}
         </div>
     </header>
