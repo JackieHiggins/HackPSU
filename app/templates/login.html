@@ -1,5 +1,75 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<!-- css for both boxes -->
+<style>
+.auth-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.auth-box {
+    display: flex;
+    gap: 50px; /* space between Sign In and Register */
+    flex-wrap: wrap; /* allow wrapping on small screens */
+}
+
+.form-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    min-width: 250px;
+    max-width: 300px;
+}
+
+.form-section input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-section button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.signin-btn {
+    background-color: #007BFF;
+}
+
+.signin-btn:hover {
+    background-color: #0056b3;
+}
+
+.register-btn {
+    background-color: #28a745;
+}
+
+.register-btn:hover {
+    background-color: #1e7e34;
+}
+
+/* Responsive: stack boxes on small screens */
+@media (max-width: 768px) {
+    .auth-box {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+}
+</style>
+
+
+
 <div class="auth-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -49,4 +119,10 @@
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 {% endblock %}
+=======
+{% endblock %}
+
+
+>>>>>>> ef812f3e8c8748c3e1e620ed5bff9fbbaf5db251
