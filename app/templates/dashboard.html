@@ -1,26 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="dashboard-container">
-
-    <!-- Daily emojis -->
     <div class="emoji-display">
         {{ emojis }}
     </div>
-
-    <!-- Story input -->
     <form method="POST" class="story-form">
         <textarea name="story" placeholder="Write a short story inspired by today’s emojis..." required></textarea>
         <button type="submit" class="submit-btn">Submit</button>
     </form>
-
     <hr>
-
-    <!-- Posts feed -->
     <div class="posts-container">
-        <h3>All Stories</h3>
+        <h3>Today's Stories</h3>
         {% for post in posts %}
             <div class="post">
-                <b class="post-user">{{ post.username }}</b>: {{ post.text }}
+                <b class="post-user">{{ post.author.username }}</b>: {{ post.content }}
             </div>
         {% else %}
             <p>No stories yet. Be the first to share!</p>
