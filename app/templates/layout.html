@@ -2,29 +2,39 @@
 <html lang="en">
 <head>
     <!-- 1. The Head -->
-    <meta ...>
-    <title>EmojiStory</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or "EmojiStory" }}</title>
     
     <!-- 2. The Link to CSS -->
-    <!-- url_for() is a special Flask function that builds a URL. -->
-    <!-- This tells Flask to find the 'style.css' file inside the 'static' folder. -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <!-- 3. The Navigation (Same on every page) -->
-    <nav>
-        <a href="/">Home</a>
-        <!-- We'll add login/logout links here later -->
-    </nav>
+    <!-- 3. The Header / Navigation -->
+    <header class="header">
+        <div class="header-left">
+            <!-- App Logo -->
+            <a href="/" class="logo-link">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
+                <span class="app-name">EmojiStory</span>
+            </a>
+        </div>
 
-    <main>
-        <!--
-          This is a "Jinja2" block.
-          Think of it as an **empty slot** or a **hole**.
-          It tells Flask: "I've built the chassis. Now,
-          I'm leaving this spot open for the child template
-          (like dashboard.html) to inject its specific content."
-        -->
+        <div class="header-right">
+            {% if username %}
+                <!-- When logged in: show username, avatar, logout -->
+                <span class="username">{{ username }}</span>
+                <img src="{{ url_for('static', filename='default-user.png') }}" alt="User Avatar" class="avatar">
+                <a href="{{ url_for('main.logout') }}" class="nav-link">Logout</a>
+            {% else %}
+                <!-- When not logged in: show sign-in link -->
+                <a href="{{ url_for('main.login') }}" class="nav-link">Sign In</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- 4. Page Content -->
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 </body>
