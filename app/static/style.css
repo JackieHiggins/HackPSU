@@ -164,3 +164,17 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(30, 136, 229, 0.2);
 }
+
+/* Flash / alert styles */
+.alert-message, .alert-error, .alert-danger {
+    background-color: #ffe6e6; /* pale red background */
+    color: #b00020; /* strong red text */
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    border: 1px solid #f5c6cb;
+    box-shadow: 0 1px 3px rgba(176,0,32,0.06);
+}
+
+/* fallback .error class used elsewhere */
+.error { color: #b00020; font-weight: 600; }
