@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 1. The Head -->
+    <meta ...>
+    <title>EmojiStory</title>
+    
+    <!-- 2. The Link to CSS -->
+    <!-- url_for() is a special Flask function that builds a URL. -->
+    <!-- This tells Flask to find the 'style.css' file inside the 'static' folder. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- 3. The Navigation (Same on every page) -->
+    <nav>
+        <a href="/">Home</a>
+        <!-- We'll add login/logout links here later -->
+    </nav>
+
+    <main>
+        <!--
+          This is a "Jinja2" block.
+          Think of it as an **empty slot** or a **hole**.
+          It tells Flask: "I've built the chassis. Now,
+          I'm leaving this spot open for the child template
+          (like dashboard.html) to inject its specific content."
+        -->
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

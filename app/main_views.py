@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 # main views blueprint
 main = Blueprint('main', __name__)
@@ -6,4 +6,8 @@ main = Blueprint('main', __name__)
 # home
 @main.route('/')
 def index():
-    return "<h1>Server is running!</h1><p>Ready for the next stage.</p>"
+    return render_template('dashboard.html')  
+
+@main.route('/login')
+def login():
+    return render_template('login.html')
