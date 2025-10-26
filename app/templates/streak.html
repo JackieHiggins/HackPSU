@@ -6,10 +6,15 @@
     
     <div class="streak-display-container">
         <div class="streak-display">
-            <span class="streak-number">{{ current_streak }}</span>
-            <span class="streak-label">Day{% if current_streak != 1 %}s{% endif %}</span>
+            <div class="streak-icon">🔥</div>
+            
+            <div class="streak-number-wrapper">
+                <span class="streak-number">{{ current_streak }}</span>
+                <span class="streak-label">Day{% if current_streak != 1 %}s{% endif %}</span>
+            </div>
         </div>
     </div>
+    <p class="streak-hover-prompt">Hover over the flame to see your streak!</p>
 
     <h3 class="subsection-title">How It Works</h3>
     <div class="streak-explanation">
