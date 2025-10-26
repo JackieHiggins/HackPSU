@@ -59,7 +59,7 @@
 
 .streak-rule-icon {
     font-size: 2.5rem;
-    background-color: var(--light-cream);
+    background-color: var(--light-gray);
     padding: 1rem;
     border-radius: 50%;
     width: 70px;
@@ -68,6 +68,11 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0; /* Prevents icon from shrinking */
+}
+.streak-rule-icon:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
 }
 
 .streak-rule-text h4 {

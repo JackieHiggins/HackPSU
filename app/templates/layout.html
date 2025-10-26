@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title or "Glyphy" }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Include streak.css if this is the streak page -->
+    {% if request.endpoint == 'main.streak' %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='streak.css') }}">
+    {% endif %}
 </head>
 <body>
     <header class="header">
@@ -19,9 +23,10 @@
         <div class="header-right" style="display:flex; align-items:center; gap:15px;">
 
             {% if current_user.is_authenticated %}
-                <div class="streak-badge">
+                <!-- === CHANGED: Div is now an Anchor (link) === -->
+                <a href="{{ url_for('main.streak') }}" class="streak-badge">
                     🔥 <span class="streak-count">{{ current_streak }}</span>
-                </div>
+                </a>
 
                 <a href="{{ url_for('main.profile') }}" class="profile-link">
                     <img src="{{ current_user.profile_pic or url_for('static', filename='images/default_pfp.png') }}"
