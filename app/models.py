@@ -8,8 +8,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(162))
-    current_streak = db.Column(db.Integer, default=0)  # Current posting streak
-    last_story_date = db.Column(db.Date)  # Last date when user posted a story
+    current_streak = db.Column(db.Integer, default=0)  
+    last_story_date = db.Column(db.Date)  
+    profile_pic = db.Column(db.String(200), nullable=True)
     
     stories = db.relationship('Story', backref='author', lazy='dynamic')
     comments = db.relationship('Comments', backref='author', lazy='dynamic')

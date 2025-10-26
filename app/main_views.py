@@ -4,6 +4,8 @@ from .models import DailyEmoji, Story, User, Comments
 from .extensions import db
 from datetime import date
 import random 
+import os
+from werkzeug.utils import secure_filename
 
 main = Blueprint('main', __name__)
 
@@ -264,40 +266,61 @@ def like_story(story_id):
 
     return jsonify({'likes': story.likes, 'liked': liked})
 
-@main.route('/profile')
+@main.route('/profile', methods=['GET', 'POST'])  # <-- ADDED 'POST'
 @login_required
 def profile():
-    # Get the current user's profile information and their stories
-    # user_posts: all stories authored by the user (most recent first)
-    user_posts = Story.query.filter_by(author=current_user).order_by(Story.timestamp.desc()).all()
+    if request.method == 'POST':
+        if 'profile_pic' not in request.files:
+            flash('No file part in request', 'warning')
+            return redirect(request.url)
+        
+        file = request.files['profile_pic']
 
-    # user_comments: comments made by the user. For each comment include the title/snippet of the story it references
+        if file.filename == '':
+            flash('No file selected', 'warning')
+            return redirect(request.url)
+
+        if file:
+            filename = secure_filename(file.filename)
+            
+            unique_filename = f"user_{current_user.id}_{filename}"
+            
+            upload_path = os.path.join('app', 'static', 'profile_pics')
+            
+            os.makedirs(upload_path, exist_ok=True)
+
+            file.save(os.path.join(upload_path, unique_filename))
+
+            current_user.profile_pic = url_for('static', filename=f'profile_pics/{unique_filename}')
+            db.session.commit()
+            
+            flash('Your profile picture has been updated!', 'success')
+            return redirect(url_for('main.profile'))
+
+    # This existing GET request logic runs when the page is just loaded
+    user_posts = Story.query.filter_by(author=current_user).order_by(Story.timestamp.desc()).all()
     raw_comments = Comments.query.filter_by(user_id=current_user.id).order_by(Comments.created.desc()).all()
+    # ... (the rest of your GET logic for comments and likes)
     user_comments = []
     for c in raw_comments:
-        # Try to find the story this comment references
-        story = None
-        if c.story_id:
-            story = Story.query.get(c.story_id)
-        post_title = story.content[:60] + '...' if story and len(story.content) > 60 else (story.content if story else 'Unknown')
+        story = Story.query.get(c.story_id) if c.story_id else None
+        post_title = story.content[:60] + '...' if story and len(story.content) > 60 else (story.content if story else 'Unknown Story')
         user_comments.append({
             'post_title': post_title,
             'content': c.content,
             'date_posted': c.created.strftime('%Y-%m-%d %H:%M')
         })
 
-    # user_likes: the UI expects a list of liked posts. We don't have a persistent Like model,
-    # so use session['liked_stories'] (client-side) to show what this browser liked.
     liked_ids = session.get('liked_stories', [])
     user_likes = []
     if liked_ids:
-        stories = Story.query.filter(Story.id.in_(liked_ids)).all()
-        for s in stories:
-            user_likes.append({
-                'post_title': s.content[:60] + ('...' if len(s.content) > 60 else ''),
-                'date_liked': s.timestamp.strftime('%Y-%m-%d %H:%M')
-            })
-
+        liked_stories_objs = Story.query.filter(Story.id.in_(liked_ids)).all()
+        for s in liked_stories_objs:
+             user_likes.append({
+                 'post_title': s.content[:60] + ('...' if len(s.content) > 60 else ''),
+                 'date_liked': s.timestamp.strftime('%Y-%m-%d %H:%M') 
+             })
+    
     return render_template('user.html',
                            current_user=current_user,
                            user_posts=user_posts,

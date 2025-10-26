@@ -4,7 +4,6 @@
 <div class="content-card">
 
     <div class="profile-header">
-        <!-- Profile Picture -->
         <div class="profile-pic-wrapper">
             <form id="profile-pic-form" action="{{ url_for('main.profile') }}" method="POST" enctype="multipart/form-data">
                 <label for="profile-pic-input">
@@ -18,23 +17,19 @@
             <small>Click the image to change your picture</small>
         </div>
 
-        <!-- Username -->
         <h2>{{ current_user.username }}</h2>
 
-        <!-- Email -->
         <p>
             <strong>Email:</strong> {{ current_user.email }}
         </p>
     </div>
 
-    <!-- Tabs -->
     <div class="profile-tabs">
         <button class="tab-button active" onclick="showTab('posts')">Posts</button>
         <button class="tab-button" onclick="showTab('comments')">Comments</button>
         <button class="tab-button" onclick="showTab('likes')">Likes</button>
     </div>
 
-    <!-- Content Areas -->
     <div id="posts" class="tab-content">
         {% if user_posts %}
             {% for post in user_posts %}
