@@ -12,15 +12,15 @@
 
     {% if user_story %}
     <h3>You've submitted your story for today!</h3>
-    <p>Great work! Now you can go read what others wrote.</p>
-    <a href="{{ url_for('main.stories') }}" class="btn">View All Stories</a>
-    
-    <div class="submitted-story-card">
+        <div class="submitted-story-card">
         <h4>Your Submission:</h4>
         <div class="submitted-story-content">
             {{ user_story.content }}
         </div>
     </div>
+    <p>Great work! Now you can go read what others wrote.</p>
+    <a href="{{ url_for('main.stories') }}" class="view_stories_btn">View All Stories</a>
+
 {% else %}
         <h3>Submit Your Story</h3>
         <form action="{{ url_for('main.submit_story') }}" method="POST" class="story-form">

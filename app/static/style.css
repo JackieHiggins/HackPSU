@@ -219,7 +219,7 @@ body {
 }
 
 .submitted-story-card {
-    background: var(--light-cream);
+    background: var(--light-gray);
     border: 1px solid #eee;
     border-radius: 8px;
     padding: 1.5rem;
@@ -478,9 +478,29 @@ body {
     color: white;
 }
 
+.view_stories_btn {
+    padding: 0.5rem 1rem;
+    display: block;
+    margin: 0 auto;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: var(--dark-blue);
+    color: white;
+}
+.view_stories_btn:hover{
+    background: var(--dark-blue-hover);
+}
+
 .btn:hover {
     background: var(--dark-blue-hover);
 }
+
 
 .btn.save-edit {
     background: var(--dark-blue);
