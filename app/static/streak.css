@@ -1,12 +1,11 @@
-/* === STREAK PAGE STYLES === */
 .streak-display-container {
     display: flex;
     justify-content: center;
-    margin: 2rem 0 1rem 0; /* Reduced bottom margin */
+    margin: 2rem 0 1rem 0; 
 }
 
 .streak-display {
-    position: relative; /* This is the anchor for the stacked elements */
+    position: relative; 
     width: 180px;
     height: 180px;
     background-color: var(--dark-blue);
@@ -18,16 +17,14 @@
     border: 6px solid var(--golden-yellow);
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     cursor: pointer;
-    overflow: hidden; /* Ensures nothing spills out */
-    transition: background-color 0.3s ease-in-out; /* CHANGED: Added transition for smooth color change */
+    overflow: hidden; 
+    transition: background-color 0.3s ease-in-out; 
 }
 
-/* ADDED: On hover, the background color of the circle will change */
 .streak-display:hover {
     background-color: var(--dark-orange-hover);
 }
 
-/* Styles for both stacked elements */
 .streak-icon,
 .streak-number-wrapper {
     position: absolute;
@@ -36,17 +33,15 @@
     transform: translate(-50%, -50%);
     width: 100%;
     text-align: center;
-    transition: opacity 0.3s ease-in-out; /* Smooth fade effect */
+    transition: opacity 0.3s ease-in-out;
 }
 
-/* Initially, the flame is visible and on top */
 .streak-icon {
     font-size: 6rem;
     opacity: 1;
     z-index: 2;
 }
 
-/* Initially, the number is invisible and underneath */
 .streak-number-wrapper {
     display: flex;
     flex-direction: column;
@@ -56,12 +51,10 @@
     z-index: 1;
 }
 
-/* On hover, fade out the flame */
 .streak-display:hover .streak-icon {
     opacity: 0;
 }
 
-/* On hover, fade in the number */
 .streak-display:hover .streak-number-wrapper {
     opacity: 1;
 }
