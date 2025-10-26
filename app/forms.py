@@ -29,6 +29,7 @@ class RegistrationForm(FlaskForm):
         # use match() so the anchored regex is applied to the full string
         if not self.passReq.match(password.data or ''):
             raise ValidationError('Password must meet the requirements.')
+        print('Password must meet the requirements.')
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
