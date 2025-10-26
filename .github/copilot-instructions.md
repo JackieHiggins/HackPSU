@@ -1,3 +1,7 @@
+## Project: HackPSU — AI assistant instructions
+
+Purpose
+ - Help an AI coding agent become immediately productive in this small Flask-style app.
 Project: HackPSU — AI assistant instructions
 
 Purpose
@@ -48,4 +52,7 @@ Assumptions & notes (explicit)
 - Many files in this snapshot are placeholders (empty). This document is written from the repository structure rather than function bodies. Before implementing behavior, inspect those files — they are the canonical source of truth.
 - If any automated workflows (CI, tests) exist, they will be in `.github/workflows/` or listed in README; none were found in this snapshot.
 
-If anything here is unclear or you want the agent to follow stricter rules (naming conventions, tests, linting), tell me which rules to encode and I will update this file.
+If you want different conventions (naming, linting, tests), tell the maintainers and update this file.
+
+---
+Please review this and tell me if you'd like any conventions added (tests, linting, CI, or naming rules). I can iterate.

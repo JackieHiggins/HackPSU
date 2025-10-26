@@ -67,20 +67,25 @@ def submit_story():
         flash("Your story must be at least 10 characters long.", "warning")
         return redirect(url_for('main.dashboard'))
 
-    # Check if user already submitted
-    existing_story = Story.query.filter_by(author=current_user, daily_emoji_id=daily_emojis_obj.id).first()
-    if existing_story:
+    # Check if user can post today
+    if not current_user.can_post_today():
         flash("You have already submitted a story for today.", "warning")
         return redirect(url_for('main.dashboard'))
 
     # Create the new story and link it to the prompt
-    new_story = Story(content=story_content, 
-                      author=current_user, 
-                      daily_emoji_id=daily_emojis_obj.id)
-    db.session.add(new_story)
-    db.session.commit()
-    flash("Your story has been submitted!", "success")
-    return redirect(url_for('main.stories')) # Redirect to the stories page
+    try:
+        new_story = Story(content=story_content, 
+                        author=current_user, 
+                        daily_emoji_id=daily_emojis_obj.id)
+        db.session.add(new_story)
+        # The streak is updated in Story.__init__, now we just need to commit
+        db.session.commit()
+        flash(f"Story submitted! Your current streak: {current_user.current_streak} days!", "success")
+        return redirect(url_for('main.stories')) # Redirect to the stories page
+    except Exception as e:
+        db.session.rollback()
+        flash("Error submitting your story. Please try again.", "error")
+        return redirect(url_for('main.dashboard'))
 
 
 @main.route('/stories')
@@ -89,16 +94,17 @@ def stories():
     daily_emojis_obj = get_or_create_daily_prompt()
     
     # Your project rule: user must post before they can view stories
-    user_story_for_today = Story.query.filter_by(
+    user_story_for_today = Story.query.filter_by( # Check if the current user has already posted a story for this prompt
         author=current_user, 
         daily_emoji_id=daily_emojis_obj.id
     ).first()
 
-    if not user_story_for_today:
+    if not user_story_for_today: # If they haven't posted, redirect them back to the dashboard with a message
         flash("You must post your own story before you can view others'.", "warning")
         return redirect(url_for('main.dashboard'))
 
     # If they passed the check, get all stories for the prompt
+
     all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all()
     users = User.query.all()
 
@@ -108,6 +114,8 @@ def stories():
         if user:
             combined.append({'name': user.username, 'story': story.content})
 
+    all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all() # Get all stories for the current prompt, ordered by most recent
+    
     # Render your (currently empty) stories.html file and pass the data to it
     # We will style this file in the next step.
     return render_template('stories.html', 

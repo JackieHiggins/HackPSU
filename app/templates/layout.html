@@ -7,21 +7,41 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="header">
-        <div class="header-left">
-            <a href="{{ url_for('main.index') }}" class="logo-link">
-                <span class="app-name">EmojiStory</span>
+    <header class="header" 
+        style="display:flex; justify-content:space-between; align-items:center; 
+               background-color:#007BFF; padding:10px 20px; color:white;">
+
+        <!-- Left side: logo -->
+        <div class="header-left" style="display:flex; align-items:center;">
+            <a href="{{ url_for('main.index') }}" class="logo-link" style="text-decoration:none; color:white;">
+                <span class="app-name" style="font-size:1.4em; font-weight:bold; color:white;">EmojiStory</span>
             </a>
         </div>
-        <div class="header-right">
+
+        <!-- Right side: streak, username, logout -->
+        <div class="header-right" style="display:flex; align-items:center; gap:15px;">
+
             {% if current_user.is_authenticated %}
-                <span class="username">{{ current_user.username }}</span>
-                <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
+                <!-- 🔥 Streak icon just left of username -->
+                <div style="display:flex; align-items:center; font-size:18px; background:#ff9800; 
+                            color:white; padding:4px 8px; border-radius:15px; margin-right:6px;">
+                    🔥 <span style="margin-left:4px; font-weight:bold; color:white;">{{ current_streak }}</span>
+                </div>
+
+                <!-- Username -->
+                <span class="username" style="font-weight:bold; color:white;">{{ current_user.username }}</span>
+
+                <!-- Logout -->
+                <a href="{{ url_for('auth.logout') }}" class="nav-link" 
+                   style="color:white; text-decoration:none; font-weight:bold;">Logout</a>
+
             {% else %}
-                <a href="{{ url_for('auth.login_register') }}" class="nav-link">Sign In</a>
+                <a href="{{ url_for('auth.login_register') }}" class="nav-link"
+                   style="color:white; text-decoration:none; font-weight:bold;">Sign In</a>
             {% endif %}
         </div>
     </header>
+
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
