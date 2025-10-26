@@ -62,12 +62,6 @@ class Story(db.Model):
     
     comments = db.relationship('Comments', backref='story', lazy='dynamic')
     
-    def __init__(self, *args, **kwargs):
-        super(Story, self).__init__(*args, **kwargs)
-        # Update the user's streak when story is created
-        if self.author:
-            self.author.update_streak(self.timestamp.date())
-            db.session.add(self.author)
 
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)

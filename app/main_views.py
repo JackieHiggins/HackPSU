@@ -78,15 +78,27 @@ def submit_story():
 
     # Create the new story and link it to the prompt
     try:
-        new_story = Story(content=story_content, 
-                        author=current_user, 
-                        daily_emoji_id=daily_emojis_obj.id)
+        new_story = Story(content=story_content,
+                          author=current_user,
+                          daily_emoji_id=daily_emojis_obj.id)
+
+        # Update the user's streak explicitly here (avoid side-effects in model __init__)
+        current_user.update_streak(date.today())
+
         db.session.add(new_story)
+        db.session.add(current_user)
         db.session.commit()
         flash(f"Story submitted! Your current streak: {current_user.current_streak} days!", "success")
         return redirect(url_for('main.stories'))
     except Exception as e:
         db.session.rollback()
+        # Log error to console for debugging (do not expose raw error to users)
+        print(f"Error committing new story: {e}")
+        try:
+            import traceback
+            traceback.print_exc()
+        except Exception:
+            pass
         flash("Error submitting your story. Please try again.", "error")
         return redirect(url_for('main.dashboard'))
 
