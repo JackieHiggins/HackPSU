@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title or "EmojiStory" }}</title>
+    <title>{{ title or "Glyphy" }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -14,7 +14,7 @@
         <!-- Left side: logo -->
         <div class="header-left" style="display:flex; align-items:center;">
             <a href="{{ url_for('main.index') }}" class="logo-link" style="text-decoration:none; color:white;">
-                <span class="app-name" style="font-size:1.4em; font-weight:bold; color:white;">EmojiStory</span>
+                <span class="app-name" style="font-size:1.4em; font-weight:bold; color:white;">Glyphy</span>
             </a>
         </div>
 
@@ -28,8 +28,14 @@
                     🔥 <span style="margin-left:4px; font-weight:bold; color:white;">{{ current_streak }}</span>
                 </div>
 
-                <!-- Username -->
-                <a href="{{ url_for('main.profile') }}" class="profile-link"><span class="username" style="font-weight:bold; color:white;">{{ current_user.username }}</span></a>
+                <!-- Profile Picture -->
+                <a href="{{ url_for('main.profile') }}" class="profile-link" style="display:flex; align-items:center;">
+                    <img src="{{ current_user.profile_pic or url_for('static', filename='images/default_pfp.png') }}"
+                         alt="{{ current_user.username }}'s Profile"
+                         style="width:40px; height:40px; border-radius:50%; border:2px solid white; object-fit:cover; transition: transform 0.2s ease;"
+                         onmouseover="this.style.transform='scale(1.1)'"
+                         onmouseout="this.style.transform='scale(1)'">
+                </a>
 
                 <!-- Logout -->
                 <a href="{{ url_for('auth.logout') }}" class="nav-link" 
