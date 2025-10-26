@@ -5,14 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title or "EmojiStory" }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <style>
-    @keyframes flicker {
-        0% { box-shadow: 0 0 5px #ff9800; }
-        50% { box-shadow: 0 0 15px #ff5722; }
-        100% { box-shadow: 0 0 5px #ff9800; }
-    }
-    </style>
 </head>
 <body>
     <header class="header" 
@@ -22,7 +14,7 @@
         <!-- Left side: logo -->
         <div class="header-left" style="display:flex; align-items:center;">
             <a href="{{ url_for('main.index') }}" class="logo-link" style="text-decoration:none; color:white;">
-                <span class="app-name" style="font-size:1.4em; font-weight:bold;">EmojiStory</span>
+                <span class="app-name" style="font-size:1.4em; font-weight:bold; color:white;">EmojiStory</span>
             </a>
         </div>
 
@@ -32,13 +24,12 @@
             {% if current_user.is_authenticated %}
                 <!-- 🔥 Streak icon just left of username -->
                 <div style="display:flex; align-items:center; font-size:18px; background:#ff9800; 
-                            color:white; padding:4px 8px; border-radius:15px; animation:flicker 1s infinite;
-                            margin-right:6px;">
-                    🔥 <span style="margin-left:4px; font-weight:bold;">{{ streak_count }}</span>
+                            color:white; padding:4px 8px; border-radius:15px; margin-right:6px;">
+                    🔥 <span style="margin-left:4px; font-weight:bold; color:white;">{{ current_streak }}</span>
                 </div>
 
                 <!-- Username -->
-                <span class="username" style="font-weight:bold;">{{ current_user.username }}</span>
+                <span class="username" style="font-weight:bold; color:white;">{{ current_user.username }}</span>
 
                 <!-- Logout -->
                 <a href="{{ url_for('auth.logout') }}" class="nav-link" 
