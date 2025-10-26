@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify
 from flask_login import current_user, login_required
-from .models import DailyEmoji, Story, User
+from .models import DailyEmoji, Story, User, Comments
 from .extensions import db
 from datetime import date
 
@@ -192,6 +192,46 @@ def like_story(story_id):
 
     return jsonify({'likes': story.likes, 'liked': liked})
 
+@main.route('/profile')
+@login_required
+def profile():
+    # Get the current user's profile information and their stories
+    # user_posts: all stories authored by the user (most recent first)
+    user_posts = Story.query.filter_by(author=current_user).order_by(Story.timestamp.desc()).all()
+
+    # user_comments: comments made by the user. For each comment include the title/snippet of the story it references
+    raw_comments = Comments.query.filter_by(user_id=current_user.id).order_by(Comments.created.desc()).all()
+    user_comments = []
+    for c in raw_comments:
+        # Try to find the story this comment references
+        story = None
+        if c.story_id:
+            story = Story.query.get(c.story_id)
+        post_title = story.content[:60] + '...' if story and len(story.content) > 60 else (story.content if story else 'Unknown')
+        user_comments.append({
+            'post_title': post_title,
+            'content': c.content,
+            'date_posted': c.created.strftime('%Y-%m-%d %H:%M')
+        })
+
+    # user_likes: the UI expects a list of liked posts. We don't have a persistent Like model,
+    # so use session['liked_stories'] (client-side) to show what this browser liked.
+    liked_ids = session.get('liked_stories', [])
+    user_likes = []
+    if liked_ids:
+        stories = Story.query.filter(Story.id.in_(liked_ids)).all()
+        for s in stories:
+            user_likes.append({
+                'post_title': s.content[:60] + ('...' if len(s.content) > 60 else ''),
+                'date_liked': s.timestamp.strftime('%Y-%m-%d %H:%M')
+            })
+
+    return render_template('user.html',
+                           current_user=current_user,
+                           user_posts=user_posts,
+                           user_comments=user_comments,
+                           user_likes=user_likes)
+
 
 @main.route('/stories/<int:story_id>/edit', methods=['POST'])
 @login_required
@@ -223,4 +263,5 @@ def edit_story(story_id):
         db.session.rollback()
         flash("Error updating your story. Please try again.", "error")
         return jsonify({'success': False}), 500
-# ...existing code...
+
+

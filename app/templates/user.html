@@ -5,7 +5,7 @@
 
     <!-- Profile Picture -->
     <div style="position:relative; text-align:center;">
-        <form id="profile-pic-form" action="{{ url_for('main.upload_profile_pic') }}" method="POST" enctype="multipart/form-data">
+        <form id="profile-pic-form" action="{{ url_for('main.profile') }}" method="POST" enctype="multipart/form-data">
             <label for="profile-pic-input" style="cursor:pointer;">
                 <img src="{{ current_user.profile_pic or url_for('static', filename='default_user.png') }}"
                      alt="Profile Picture"
