@@ -232,6 +232,15 @@ def profile():
                            user_comments=user_comments,
                            user_likes=user_likes)
 
+@main.route('/streak')
+@login_required
+def streak():
+    # Get the current user's streak information
+    current_streak = current_user.current_streak
+
+    return render_template('streak.html',
+                           current_user=current_user,
+                           current_streak=current_streak)
 
 @main.route('/stories/<int:story_id>/edit', methods=['POST'])
 @login_required

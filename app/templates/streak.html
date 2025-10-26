@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="content-card">
+    <h2 class="section-title">Your Writing Streak</h2>
+    
+    <div class="streak-display-container">
+        <div class="streak-display">
+            <span class="streak-number">{{ current_streak }}</span>
+            <span class="streak-label">Day{% if current_streak != 1 %}s{% endif %}</span>
+        </div>
+    </div>
+
+    <h3 class="subsection-title">How It Works</h3>
+    <div class="streak-explanation">
+        <div class="streak-rule">
+            <div class="streak-rule-icon">🔥</div>
+            <div class="streak-rule-text">
+                <h4>Build Your Streak</h4>
+                <p>Post a story for the daily prompt to start or continue your streak.</p>
+            </div>
+        </div>
+        <div class="streak-rule">
+            <div class="streak-rule-icon">📅</div>
+            <div class="streak-rule-text">
+                <h4>Keep It Consecutive</h4>
+                <p>Your streak increases by one for each consecutive day you post a story.</p>
+            </div>
+        </div>
+        <div class="streak-rule">
+            <div class="streak-rule-icon">💔</div>
+            <div class="streak-rule-text">
+                <h4>Don't Miss a Day</h4>
+                <p>If you miss a day, your streak will reset to 1 the next time you post.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
