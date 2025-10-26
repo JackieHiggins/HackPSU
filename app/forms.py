@@ -2,8 +2,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from .models import User
+import re
 
 class RegistrationForm(FlaskForm):
+    # at least 8 chars, contains a digit, a special char, a lowercase and an uppercase letter
+    passReq = re.compile(r'^(?=.*\d)(?=.*\W)(?=.*[a-z])(?=.*[A-Z]).{8,}$')
+
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -20,6 +24,11 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+    def validate_password(self, password):
+        # use match() so the anchored regex is applied to the full string
+        if not self.passReq.match(password.data or ''):
+            raise ValidationError('Password must meet the requirements.')
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
