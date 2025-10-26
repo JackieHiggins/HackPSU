@@ -6,7 +6,7 @@ import re
 
 class RegistrationForm(FlaskForm):
     # at least 8 chars, contains a digit, a special char, a lowercase and an uppercase letter
-    passReq = re.compile(r'^(?=.*\d)(?=.*\W)(?=.*[a-z])(?=.*[A-Z]).{8,}$')
+    passReq = re.compile(r'^(?=.*\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$')
 
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
