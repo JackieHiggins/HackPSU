@@ -7,7 +7,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256))
+    password_hash = db.Column(db.String(162))
     current_streak = db.Column(db.Integer, default=0)  # Current posting streak
     last_story_date = db.Column(db.Date)  # Last date when user posted a story
     
@@ -19,6 +19,11 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def can_post_today(self):
+        """Check if user can post a story today"""
+        today = date.today()
+        return self.last_story_date is None or self.last_story_date < today
 
     def update_streak(self, story_date=None):
         """Update user's streak based on story post date"""
