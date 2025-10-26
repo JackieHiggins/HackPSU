@@ -49,16 +49,6 @@ body {
     gap: 0.5rem;
 }
 
-.logo {
-    height: 40px;
-    width: auto;
-    transition: transform 0.2s ease;
-}
-
-.logo:hover {
-    transform: scale(1.05);
-}
-
 .app-name {
     font-size: 1.5rem;
     font-weight: 600;
@@ -178,3 +168,71 @@ body {
 
 /* fallback .error class used elsewhere */
 .error { color: #b00020; font-weight: 600; }
+
+/* ======================================== */
+/* == NEW STYLES FOR DASHBOARD & STORIES == */
+/* ======================================== */
+
+.emoji-prompt {
+    font-size: 2.5em;
+    text-align: center;
+    margin: 20px 0;
+    padding: 1.5rem;
+    background-color: var(--light-gray);
+    border-radius: 8px;
+}
+
+.btn {
+    background-color: var(--primary-blue);
+    color: var(--white);
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: var(--light-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.2);
+}
+
+.story-form {
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.story-form textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.story-form p {
+    text-align: right;
+}
+
+.story-card {
+    background: var(--light-gray);
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.story-card h4 {
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+}
