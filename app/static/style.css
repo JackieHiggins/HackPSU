@@ -136,6 +136,14 @@ body {
     border-radius: 15px;
     font-size: 18px;
     margin-right: 6px;
+    cursor: default;
+    transition: transform 0.2s ease-in-out; /* Added transition for smooth effect */
+}
+
+/* Added hover effect for the streak badge */
+.streak-badge:hover {
+    transform: scale(1.1);
+    cursor: pointer;
 }
 
 .streak-count {
