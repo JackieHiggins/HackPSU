@@ -89,17 +89,17 @@ def stories():
     daily_emojis_obj = get_or_create_daily_prompt()
     
     # Your project rule: user must post before they can view stories
-    user_story_for_today = Story.query.filter_by(
+    user_story_for_today = Story.query.filter_by( # Check if the current user has already posted a story for this prompt
         author=current_user, 
         daily_emoji_id=daily_emojis_obj.id
     ).first()
 
-    if not user_story_for_today:
+    if not user_story_for_today: # If they haven't posted, redirect them back to the dashboard with a message
         flash("You must post your own story before you can view others'.", "warning")
         return redirect(url_for('main.dashboard'))
 
     # If they passed the check, get all stories for the prompt
-    all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all()
+    all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all() # Get all stories for the current prompt, ordered by most recent
     
     # Render your (currently empty) stories.html file and pass the data to it
     # We will style this file in the next step.
