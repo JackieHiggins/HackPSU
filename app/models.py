@@ -23,15 +23,7 @@ class User(UserMixin, db.Model):
     def can_post_today(self):
         """Check if user can post a story today"""
         today = date.today()
-        # First check if there's no story today
-        daily_prompt = DailyEmoji.query.filter_by(date_posted=today).first()
-        if daily_prompt:
-            existing_story = Story.query.filter_by(
-                author=self,
-                daily_emoji_id=daily_prompt.id
-            ).first()
-            return existing_story is None
-        return True  # If no prompt exists yet, allow posting
+        return self.last_story_date is None or self.last_story_date < today
 
     def update_streak(self, story_date=None):
         """Update user's streak based on story post date"""
