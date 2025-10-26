@@ -85,18 +85,12 @@ def get_or_create_daily_prompt():
     daily_emojis_obj = DailyEmoji.query.filter_by(date_posted=today).first()
     
     if not daily_emojis_obj:
-        # --- START: Random Emoji Logic ---
-        
-        # Seed the random number generator with today's date for daily consistency
+
         random.seed(today.isoformat())
         
-        # Select 6 unique emojis from the pool
         random_emojis = random.sample(EMOJI_POOL, 6)
         
-        # Join them into a space-separated string
         emoji_string = " ".join(random_emojis)
-        
-        # --- END: Random Emoji Logic ---
 
         daily_emojis_obj = DailyEmoji(emojis=emoji_string, date_posted=today)
         db.session.add(daily_emojis_obj)
