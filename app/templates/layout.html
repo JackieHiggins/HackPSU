@@ -29,7 +29,7 @@
                 </div>
 
                 <!-- Username -->
-                <span class="username" style="font-weight:bold; color:white;">{{ current_user.username }}</span>
+                <a href="{{ url_for('main.profile') }}"><span class="username" style="font-weight:bold; color:white;">{{ current_user.username }}</span></a>
 
                 <!-- Logout -->
                 <a href="{{ url_for('auth.logout') }}" class="nav-link" 
