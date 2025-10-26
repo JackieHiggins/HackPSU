@@ -1,0 +1,81 @@
+/* === ABOUT PAGE STYLES === */
+.about-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.tagline {
+    font-size: 1.2rem;
+    color: #555;
+    margin-top: -0.5rem;
+}
+
+.about-section {
+    margin-bottom: 2.5rem;
+}
+
+.about-section h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark-text);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.how-it-works-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    background-color: var(--light-gray);
+    padding: 1rem;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.feature-text h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+    color: var(--dark-text);
+}
+
+.feature-text p {
+    margin: 0;
+    color: #555;
+    line-height: 1.5;
+}
+
+.cta-section {
+    text-align: center;
+    background-color: var(--light-gray);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.cta-section p {
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .how-it-works-container {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="content-card">
+    <div class="about-header">
+        <h2 class="section-title">About Glyphy</h2>
+        <p class="tagline">Your daily spark of creativity, one emoji at a time. ✨</p>
+    </div>
+
+    <div class="about-section">
+        <h3>Our Mission</h3>
+        <p>At Glyphy, we believe everyone has a story to tell. Our mission is to provide a simple, fun, and engaging platform that inspires daily creativity. By using the universal language of emojis, we break down creative barriers and encourage writers of all levels to share their unique perspectives with a supportive community.</p>
+    </div>
+
+    <div class="about-section">
+        <h3>How It Works</h3>
+        <div class="how-it-works-container">
+            <div class="feature-item">
+                <div class="feature-icon">🗓️</div>
+                <div class="feature-text">
+                    <h4>1. Get the Daily Prompt</h4>
+                    <p>Every day, a new set of six emojis is revealed. This is your prompt, your inspiration, your creative starting line.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">✍️</div>
+                <div class="feature-text">
+                    <h4>2. Write Your Story</h4>
+                    <p>Let the emojis guide your imagination. Write a short story based on the prompt. There are no rules, just your creativity.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔥</div>
+                <div class="feature-text">
+                    <h4>3. Build Your Streak</h4>
+                    <p>Consistency is key! Write a story every day to build your writing streak and watch the flame grow brighter.</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">❤️</div>
+                <div class="feature-text">
+                    <h4>4. Read & Interact</h4>
+                    <p>Once you've submitted your story, you unlock the ability to read what others have written. Like your favorites and be part of the community.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="about-section cta-section">
+        <h3>Join the Community</h3>
+        <p>Ready to start your creative journey? Sign up and write your first story today!</p>
+        <a href="{{ url_for('auth.login_register') }}" class="btn">Get Started</a>
+    </div>
+</div>
+
+{% endblock %}

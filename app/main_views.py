@@ -242,6 +242,10 @@ def streak():
                            current_user=current_user,
                            current_streak=current_streak)
 
+@main.route('/about')
+def about():
+    return render_template('about.html')
+
 @main.route('/stories/<int:story_id>/edit', methods=['POST'])
 @login_required
 def edit_story(story_id):
