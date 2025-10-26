@@ -5,35 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title or "EmojiStory" }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <div style="display:flex; align-items:center; font-size:20px; background:#ff9800; color:white; padding:5px 10px; border-radius:20px; animation:flicker 1s infinite;">
-    🔥 <span style="margin-left:5px; font-weight:bold;">{{ streak_count }}</span>
-</div>
 
-<style>
-@keyframes flicker {
-    0% { box-shadow: 0 0 5px #ff9800; }
-    50% { box-shadow: 0 0 15px #ff5722; }
-    100% { box-shadow: 0 0 5px #ff9800; }
-}
-</style>
-
+    <style>
+    @keyframes flicker {
+        0% { box-shadow: 0 0 5px #ff9800; }
+        50% { box-shadow: 0 0 15px #ff5722; }
+        100% { box-shadow: 0 0 5px #ff9800; }
+    }
+    </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-left">
-            <a href="{{ url_for('main.index') }}" class="logo-link">
-                <span class="app-name">EmojiStory</span>
+    <header class="header" 
+        style="display:flex; justify-content:space-between; align-items:center; 
+               background-color:#007BFF; padding:10px 20px; color:white;">
+
+        <!-- Left side: logo -->
+        <div class="header-left" style="display:flex; align-items:center;">
+            <a href="{{ url_for('main.index') }}" class="logo-link" style="text-decoration:none; color:white;">
+                <span class="app-name" style="font-size:1.4em; font-weight:bold;">EmojiStory</span>
             </a>
         </div>
-        <div class="header-right">
+
+        <!-- Right side: streak, username, logout -->
+        <div class="header-right" style="display:flex; align-items:center; gap:15px;">
+
             {% if current_user.is_authenticated %}
-                <span class="username">{{ current_user.username }}</span>
-                <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
+                <!-- 🔥 Streak icon just left of username -->
+                <div style="display:flex; align-items:center; font-size:18px; background:#ff9800; 
+                            color:white; padding:4px 8px; border-radius:15px; animation:flicker 1s infinite;
+                            margin-right:6px;">
+                    🔥 <span style="margin-left:4px; font-weight:bold;">{{ streak_count }}</span>
+                </div>
+
+                <!-- Username -->
+                <span class="username" style="font-weight:bold;">{{ current_user.username }}</span>
+
+                <!-- Logout -->
+                <a href="{{ url_for('auth.logout') }}" class="nav-link" 
+                   style="color:white; text-decoration:none; font-weight:bold;">Logout</a>
+
             {% else %}
-                <a href="{{ url_for('auth.login_register') }}" class="nav-link">Sign In</a>
+                <a href="{{ url_for('auth.login_register') }}" class="nav-link"
+                   style="color:white; text-decoration:none; font-weight:bold;">Sign In</a>
             {% endif %}
         </div>
     </header>
+
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
