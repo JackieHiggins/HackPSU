@@ -50,7 +50,8 @@ body {
     width: 100%;
     z-index: 1000;
     box-sizing: border-box;
-    background-color: var(--golden-yellow);
+    /* === CHANGED: Made the gradient more noticeable === */
+    background-image: linear-gradient(to bottom, rgba(255, 215, 0, 0.92), rgba(255, 165, 0, 0.85));
     padding: 10px 20px;
     color: var(--dark-text);
     display: flex;
@@ -79,7 +80,7 @@ body {
     width: 140px;
     object-fit: contain;
     border-radius: 50%;
-    background-color: var(--dark-orange);
+    background-image: linear-gradient(135deg, #FFAA00, #FF4E00);
     border: 3px solid rgba(255, 255, 255, 0.7);
     padding: 5px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -131,19 +132,19 @@ body {
 .streak-badge {
     display: flex;
     align-items: center;
-    background: var(--dark-orange);
+    background-image: linear-gradient(135deg, #fd9800, #e65100);
     color: white;
     padding: 4px 8px;
     border-radius: 15px;
     font-size: 18px;
     margin-right: 6px;
     text-decoration: none;
-    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
 }
 
 .streak-badge:hover {
     transform: scale(1.1);
-    background-color: var(--dark-orange-hover); /* CHANGED: Now uses darker orange */
+    filter: brightness(1.2); /* Brightens the gradient on hover */
     cursor: pointer;
 }
 
