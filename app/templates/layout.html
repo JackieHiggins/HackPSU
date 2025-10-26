@@ -7,43 +7,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="header" 
-        style="display:flex; justify-content:space-between; align-items:center; 
-               background-color:#007BFF; padding:10px 20px; color:white;">
+    <header class="header">
 
-        <!-- Left side: logo -->
-        <div class="header-left" style="display:flex; align-items:center;">
-            <a href="{{ url_for('main.index') }}" class="logo-link" style="text-decoration:none; color:white;">
-                <span class="app-name" style="font-size:1.4em; font-weight:bold; color:white;">Glyphy</span>
+        <div class="header-left">
+            <a href="{{ url_for('main.index') }}" class="logo-link">
+                <img src="{{ url_for('static', filename='images/Glyphy.png') }}" 
+                     alt="Glyph Logo">
             </a>
         </div>
 
-        <!-- Right side: streak, username, logout -->
         <div class="header-right" style="display:flex; align-items:center; gap:15px;">
 
             {% if current_user.is_authenticated %}
-                <!-- 🔥 Streak icon just left of username -->
-                <div style="display:flex; align-items:center; font-size:18px; background:#0d2e53e0; 
-                            color:white; padding:4px 8px; border-radius:15px; margin-right:6px;">
-                    🔥 <span style="margin-left:4px; font-weight:bold; color:white;">{{ current_streak }}</span>
+                <div class="streak-badge">
+                    🔥 <span class="streak-count">{{ current_streak }}</span>
                 </div>
 
-                <!-- Profile Picture -->
-                <a href="{{ url_for('main.profile') }}" class="profile-link" style="display:flex; align-items:center;">
+                <a href="{{ url_for('main.profile') }}" class="profile-link">
                     <img src="{{ current_user.profile_pic or url_for('static', filename='images/default_pfp.png') }}"
                          alt="{{ current_user.username }}'s Profile"
-                         style="width:40px; height:40px; border-radius:50%; border:2px solid white; object-fit:cover; transition: transform 0.2s ease;"
+                         style="width:40px; height:40px; border-radius:50%; border:2px solid #444; object-fit:cover; transition: transform 0.2s ease;"
                          onmouseover="this.style.transform='scale(1.1)'"
                          onmouseout="this.style.transform='scale(1)'">
                 </a>
 
-                <!-- Logout -->
-                <a href="{{ url_for('auth.logout') }}" class="nav-link" 
-                   style="color:white; text-decoration:none; font-weight:bold;">Logout</a>
+                <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
 
             {% else %}
-                <a href="{{ url_for('auth.login_register') }}" class="nav-link"
-                   style="color:white; text-decoration:none; font-weight:bold;">Sign In</a>
+                <a href="{{ url_for('auth.login_register') }}" class="nav-link">Sign In</a>
             {% endif %}
         </div>
     </header>
@@ -53,7 +44,7 @@
             {% if messages %}
                 <div style="max-width:800px; margin: 1rem auto;">
                 {% for category, message in messages %}
-                    <div class="alert-message" style="margin-bottom:8px; padding:10px; border-radius:6px;">
+                    <div class="alert-message alert-{{ category }}" style="margin-bottom:8px; padding:10px; border-radius:6px;">
                         {{ message }}
                     </div>
                 {% endfor %}
