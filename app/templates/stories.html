@@ -2,8 +2,15 @@
 {% block content %}
 
 <div class="content-card">
-    <h2 class="section-title">All Stories</h2>
-    <p class="prompt-text">Prompt: {{ prompt_emojis }}</p>
+    <h2 class="section-title">ALL STORIES</h2>
+    
+    <h2 class="section-title" style="margin-bottom: 0.5rem; font-size: 1.5rem;">Today's Prompt</h2> 
+    
+    <div class="emoji-prompt stories-page-prompt">
+        {% for emoji in prompt_emojis.split() %}
+            <span class="prompt-emoji">{{ emoji }}</span>
+        {% endfor %}
+    </div>
 
     {% if ordered_stories %}
         <div class="stories-container">

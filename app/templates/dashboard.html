@@ -7,7 +7,9 @@
     <p style="text-align: center;">Write a short story inspired by the emojis below.</p>
     
     <div class="emoji-prompt">
-        {{ emojis }}
+        {% for emoji in emojis.split() %}
+            <span class="prompt-emoji">{{ emoji }}</span>
+        {% endfor %}
     </div>
 
     {% if user_story %}

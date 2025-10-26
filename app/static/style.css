@@ -199,6 +199,18 @@ body {
     padding: 0.75rem;
 }
 
+@media (max-width: 768px) {
+    .auth-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .form-section {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+
 /* Story Page Styles */
 .stories-container {
     margin-top: 2rem;
@@ -560,8 +572,8 @@ body {
     box-sizing: border-box;
 }
 
-/* Emoji Display Styles */
-.emoji-container {
+/* === EMOJI DISPLAY STYLES === */
+.emoji-container { /* For base.html */
     display: flex;
     justify-content: center;
     gap: 1rem;
@@ -569,7 +581,7 @@ body {
     font-size: 2rem;
 }
 
-.emoji {
+.emoji { /* For base.html */
     display: inline-block;
     transition: transform 0.2s ease-in-out;
 }
@@ -579,7 +591,7 @@ body {
     cursor: pointer;
 }
 
-.emoji-prompt {
+.emoji-prompt { /* For dashboard.html & stories.html (large display) */
     font-size: 4rem;
     text-align: center;
     margin: 1.5rem 0;
@@ -589,7 +601,7 @@ body {
     gap: 1rem;
 }
 
-.prompt-emoji {
+.prompt-emoji { /* Individual emoji on dashboard/stories */
     display: inline-block;
     transition: transform 0.2s ease-in-out;
 }
@@ -599,7 +611,7 @@ body {
     cursor: pointer;
 }
 
-.emoji-prompt-inline {
+.emoji-prompt-inline { /* For stories.html (inline prompt for clarity) */
     font-size: 1.2rem;
     display: inline-flex;
     gap: 0.25rem;
@@ -739,13 +751,13 @@ body {
 .home-cta .btn {
     font-size: 1.1rem;
     padding: 0.75rem 1.5rem;
-    background: var(--dark-blue);
+    background: var(--dark-orange);
     color: var(--white);
     transition: all 0.2s ease;
 }
 
 .home-cta .btn:hover {
-    background: var(--dark-blue-hover);
+    background: var(--dark-orange-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
