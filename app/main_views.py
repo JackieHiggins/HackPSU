@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 from .models import DailyEmoji, Story, User, Comments
 from .extensions import db
 from datetime import date
-import random # Import the random module
+import random 
 
 main = Blueprint('main', __name__)
 
@@ -109,7 +109,7 @@ def index():
         return redirect(url_for('main.dashboard'))
     
     daily_emojis_obj = get_or_create_daily_prompt()
-    # Split the emoji string into a list for the homepage template
+    # split the emoji string into a list for the homepage template
     emojis = daily_emojis_obj.emojis.split() 
     
     return render_template('base.html', emojis=emojis)
@@ -130,7 +130,6 @@ def dashboard():
                            user_story=user_story_for_today) # Pass the story object (or None)
 
 
-# --- NEW ROUTES FOR SUBMITTING AND VIEWING ---
 
 @main.route('/submit', methods=['POST'])
 @login_required
@@ -184,7 +183,6 @@ def submit_story():
 def stories():
     daily_emojis_obj = get_or_create_daily_prompt()
     
-    # Your project rule: user must post before they can view stories
     user_story_for_today = Story.query.filter_by( # Check if the current user has already posted a story for this prompt
         author=current_user, 
         daily_emoji_id=daily_emojis_obj.id
@@ -197,7 +195,6 @@ def stories():
     # Get all stories for the prompt ordered by most recent
     all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all()
 
-    # Build ordered list: put the current user's story first, then all others (newest first)
     ordered_stories = []
 
     # Add current user's story first (use the actual story object to preserve timestamp/content)
