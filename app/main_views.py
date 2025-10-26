@@ -61,15 +61,19 @@ def dashboard():
 @login_required
 def submit_story():
     story_content = request.form.get('story_content')
-    daily_emojis_obj = get_or_create_daily_prompt() # Get the same prompt object
+    daily_emojis_obj = get_or_create_daily_prompt()
+
+    # Double-check if user already submitted a story for today
+    existing_story = Story.query.filter_by(
+        author=current_user,
+        daily_emoji_id=daily_emojis_obj.id
+    ).first()
+
+    if existing_story:
+        return redirect(url_for('main.stories'))  # If they already submitted, just go to stories
 
     if not story_content or len(story_content) < 10:
         flash("Your story must be at least 10 characters long.", "warning")
-        return redirect(url_for('main.dashboard'))
-
-    # Check if user can post today
-    if not current_user.can_post_today():
-        flash("You have already submitted a story for today.", "warning")
         return redirect(url_for('main.dashboard'))
 
     # Create the new story and link it to the prompt
@@ -78,10 +82,9 @@ def submit_story():
                         author=current_user, 
                         daily_emoji_id=daily_emojis_obj.id)
         db.session.add(new_story)
-        # The streak is updated in Story.__init__, now we just need to commit
         db.session.commit()
         flash(f"Story submitted! Your current streak: {current_user.current_streak} days!", "success")
-        return redirect(url_for('main.stories')) # Redirect to the stories page
+        return redirect(url_for('main.stories'))
     except Exception as e:
         db.session.rollback()
         flash("Error submitting your story. Please try again.", "error")
