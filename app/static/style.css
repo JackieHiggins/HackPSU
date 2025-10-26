@@ -71,6 +71,21 @@ body {
     background-color: rgba(255,255,255,0.1);
 }
 
+/* Profile link in header (username) — no underline, consistent hover */
+.profile-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.profile-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    text-decoration: none;
+}
+
 /* Streak Badge */
 .streak-badge {
     display: flex;
