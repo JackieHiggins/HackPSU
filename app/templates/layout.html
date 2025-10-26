@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title or "EmojiStory" }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <div style="display:flex; align-items:center; font-size:20px; background:#ff9800; color:white; padding:5px 10px; border-radius:20px; animation:flicker 1s infinite;">
+    🔥 <span style="margin-left:5px; font-weight:bold;">{{ streak_count }}</span>
+</div>
+
+<style>
+@keyframes flicker {
+    0% { box-shadow: 0 0 5px #ff9800; }
+    50% { box-shadow: 0 0 15px #ff5722; }
+    100% { box-shadow: 0 0 5px #ff9800; }
+}
+</style>
+
 </head>
 <body>
     <header class="header">

@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Stories</title>
+</head>
+<body>
+    <h1>All Stories</h1>
+    <ul>
+        {% for story in stories %}
+            <li>{{ story.user_id }} — {{ story.content }}</li>
+        {% else %}
+            <li>No user stories found.</li>
+        {% endfor %}
+    </ul>
+</body>
+
+{% endblock %}
