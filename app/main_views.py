@@ -100,10 +100,18 @@ def stories():
 
     # If they passed the check, get all stories for the prompt
     all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all()
-    
+    users = User.query.all()
+
+    combined = []
+    for story in all_stories:
+        user = next((u for u in users if u.id == story.user_id), None)
+        if user:
+            combined.append({'name': user.username, 'story': story.content})
+
     # Render your (currently empty) stories.html file and pass the data to it
     # We will style this file in the next step.
     return render_template('stories.html', 
                            stories=all_stories, 
-                           prompt_emojis=daily_emojis_obj.emojis)
+                           prompt_emojis=daily_emojis_obj.emojis,
+                           data=combined)
 
