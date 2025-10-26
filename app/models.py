@@ -50,6 +50,13 @@ class DailyEmoji(db.Model):
     emojis = db.Column(db.String(50), nullable=False)
     date_posted = db.Column(db.Date, unique=True, nullable=False, default=date.today) 
     stories = db.relationship('Story', backref='daily_emoji_set', lazy='dynamic')
+    # Store individual emojis for easier access in templates and logic
+   # emoji_1 = db.Column(db.String(7), nullable=False)
+   # emoji_2 = db.Column(db.String(7), nullable=False)
+   # emoji_3 = db.Column(db.String(7), nullable=False)
+   # emoji_4 = db.Column(db.String(7), nullable=False)
+   # emoji_5 = db.Column(db.String(7), nullable=False)
+   # emoji_6 = db.Column(db.String(7), nullable=False)
 
 class Story(db.Model):
     id = db.Column(db.Integer, primary_key=True)

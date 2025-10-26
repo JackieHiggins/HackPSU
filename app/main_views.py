@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session, jsonify
 from flask_login import current_user, login_required
 from .models import DailyEmoji, Story, User
 from .extensions import db
@@ -103,6 +103,7 @@ def submit_story():
         return redirect(url_for('main.dashboard'))
 
 
+
 @main.route('/stories')
 @login_required
 def stories():
@@ -118,23 +119,108 @@ def stories():
         flash("You must post your own story before you can view others'.", "warning")
         return redirect(url_for('main.dashboard'))
 
-    # If they passed the check, get all stories for the prompt
-
+    # Get all stories for the prompt ordered by most recent
     all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all()
-    users = User.query.all()
 
-    combined = []
+    # Build ordered list: put the current user's story first, then all others (newest first)
+    ordered_stories = []
+
+    # Add current user's story first (use the actual story object to preserve timestamp/content)
+    if user_story_for_today:
+        ordered_stories.append({
+            'id': user_story_for_today.id,
+            'username': current_user.username,
+            'content': user_story_for_today.content,
+            'timestamp': user_story_for_today.timestamp.strftime('%Y-%m-%d %H:%M'),
+            'likes': user_story_for_today.likes,
+            'is_you': True
+        })
+
+    # Add other users' stories (skip the current user's to avoid duplication)
     for story in all_stories:
-        user = next((u for u in users if u.id == story.user_id), None)
-        if user:
-            combined.append({'name': user.username, 'story': story.content})
+        if story.user_id == current_user.id:
+            continue
+        author_name = story.author.username if story.author else 'Unknown'
+        ordered_stories.append({
+            'id': story.id,
+            'username': author_name,
+            'content': story.content,
+            'timestamp': story.timestamp.strftime('%Y-%m-%d %H:%M'),
+            'likes': story.likes,
+            'is_you': False
+        })
 
-    all_stories = Story.query.filter_by(daily_emoji_id=daily_emojis_obj.id).order_by(Story.timestamp.desc()).all() # Get all stories for the current prompt, ordered by most recent
-    
-    # Render your (currently empty) stories.html file and pass the data to it
-    # We will style this file in the next step.
+    # liked story ids stored in session so users can toggle their local like state
+    liked_stories = session.get('liked_stories', [])
+
     return render_template('stories.html', 
-                           stories=all_stories, 
+                           ordered_stories=ordered_stories, 
                            prompt_emojis=daily_emojis_obj.emojis,
-                           data=combined)
+                           user_story=user_story_for_today,
+                           liked_stories=liked_stories)
 
+
+@main.route('/stories/<int:story_id>/like', methods=['POST'])
+@login_required
+def like_story(story_id):
+    story = Story.query.get_or_404(story_id)
+    # only allow liking stories for the current prompt/day (optional safety)
+    daily_emojis_obj = get_or_create_daily_prompt()
+    if story.daily_emoji_id != daily_emojis_obj.id:
+        return jsonify({'error': 'Invalid story for current prompt.'}), 400
+
+    liked = False
+    liked_list = session.get('liked_stories', [])
+    if story_id in liked_list:
+        # toggle off
+        if story.likes > 0:
+            story.likes -= 1
+        liked_list.remove(story_id)
+        liked = False
+    else:
+        story.likes += 1
+        liked_list.append(story_id)
+        liked = True
+
+    session['liked_stories'] = liked_list
+    try:
+        db.session.add(story)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'DB error'}), 500
+
+    return jsonify({'likes': story.likes, 'liked': liked})
+
+
+@main.route('/stories/<int:story_id>/edit', methods=['POST'])
+@login_required
+def edit_story(story_id):
+    story = Story.query.get_or_404(story_id)
+    daily_emojis_obj = get_or_create_daily_prompt()
+    # ensure owner and same-day story
+    if story.user_id != current_user.id or story.daily_emoji_id != daily_emojis_obj.id:
+        flash("You can only edit your own story for today's prompt.", "warning")
+        return redirect(url_for('main.stories'))
+
+    new_content = None
+    if request.is_json:
+        new_content = request.json.get('content', '').strip()
+    else:
+        new_content = request.form.get('story_content', '').strip()
+
+    if not new_content or len(new_content) < 10:
+        flash("Edited story must be at least 10 characters long.", "warning")
+        return jsonify({'success': False, 'message': 'Content too short.'}), 400
+
+    story.content = new_content
+    try:
+        db.session.add(story)
+        db.session.commit()
+        flash("Your story has been updated.", "success")
+        return jsonify({'success': True, 'content': story.content})
+    except Exception as e:
+        db.session.rollback()
+        flash("Error updating your story. Please try again.", "error")
+        return jsonify({'success': False}), 500
+# ...existing code...

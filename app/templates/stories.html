@@ -1,17 +1,155 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<div class="content-card">
+    <h2 class="section-title">All Stories</h2>
+    <p class="prompt-text">Prompt: {{ prompt_emojis }}</p>
 
-<body>
-    <h1>All Stories {{prompt_emojis}}</h1>
-    <ul>
-        {% for story in stories %}
-            <li>{{ story.user_id }} — {{ story.content }}</li>
-        {% else %}
-            <li>No user stories found.</li>
-        {% endfor %}
-        {{data}}
-    </ul>
-</body>
+    {% if ordered_stories %}
+        <div class="stories-container">
+            {% for s in ordered_stories %}
+                <div class="story-card" id="story-{{ s.id }}">
+                    <div class="story-header">
+                        <div class="author-info">
+                            {% if s.is_you %}
+                                <span class="author-name is-you">Your Story</span>
+                            {% else %}
+                                <span class="author-name other">{{ s.username }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="story-meta">
+                            <span class="story-timestamp">{{ s.timestamp }}</span>
+                            <div class="story-actions">
+                                <button class="heart-btn" data-story-id="{{ s.id }}" aria-label="like">
+                                    <span class="heart-icon {% if s.id in liked_stories %}liked{% else %}not-liked{% endif %}">❤</span>
+                                    <span class="likes-count" data-story-id="{{ s.id }}">{{ s.likes }}</span>
+                                </button>
+
+                                {% if s.is_you %}
+                                    <button class="edit-btn" data-story-id="{{ s.id }}">Edit</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-content {% if s.content|length > 300 %}truncated{% endif %}" data-story-id="{{ s.id }}">
+                        {{ s.content }}
+                    </div>
+
+                    {% if s.content|length > 300 %}
+                        <a href="#" class="expand-link" data-story-id="{{ s.id }}">Read more</a>
+                    {% endif %}
+
+                    <div class="edit-area" id="edit-area-{{ s.id }}">
+                        <textarea class="edit-textarea" id="edit-text-{{ s.id }}">{{ s.content }}</textarea>
+                        <div class="edit-buttons">
+                            <button class="btn save-edit" data-story-id="{{ s.id }}">Save</button>
+                            <button class="btn cancel-edit" data-story-id="{{ s.id }}">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-stories">No stories found for this prompt.</p>
+    {% endif %}
+</div>
+
+<div id="story-modal" class="story-modal">
+    <div class="modal-content">
+        <button id="modal-close" class="modal-close">✕</button>
+        <div id="modal-author" class="modal-author"></div>
+        <div id="modal-timestamp" class="modal-timestamp"></div>
+        <div id="modal-content" class="modal-story-content"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('click', function(e){
+    // Like button
+    if (e.target.closest('.heart-btn')) {
+        e.preventDefault();
+        const btn = e.target.closest('.heart-btn');
+        const storyId = parseInt(btn.dataset.storyId, 10);
+        fetch(`{{ url_for('main.like_story', story_id=0) }}`.replace('/0/', `/${storyId}/`), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin'
+        }).then(r => r.json()).then(data => {
+            if (data && !data.error) {
+                const countEl = document.querySelector('.likes-count[data-story-id="'+storyId+'"]');
+                const heartIcon = btn.querySelector('.heart-icon');
+                if (countEl) countEl.textContent = data.likes;
+                if (data.liked) heartIcon.style.color = '#e91e63'; else heartIcon.style.color = '#999';
+            }
+        });
+    }
+
+    // Expand / Read more
+    if (e.target.matches('.expand-link')) {
+        e.preventDefault();
+        const id = e.target.dataset.storyId;
+        const container = document.querySelector('#story-' + id);
+        const author = container.querySelector('.author-name').textContent;
+        const timestamp = container.querySelector('.story-timestamp').textContent;
+        const content = container.querySelector('.story-content').textContent;
+
+        // Update modal content
+        document.getElementById('modal-author').textContent = author;
+        document.getElementById('modal-timestamp').textContent = timestamp;
+        document.getElementById('modal-content').textContent = content;
+
+        // Show modal with flex display
+        const modal = document.getElementById('story-modal');
+        modal.style.display = 'flex';
+    }
+
+    // Close modal
+    if (e.target.matches('.modal-close') || e.target.matches('.story-modal')) {
+        document.getElementById('story-modal').style.display = 'none';
+    }
+
+    // Edit button
+    if (e.target.matches('.edit-btn')) {
+        const id = e.target.dataset.storyId;
+        document.getElementById('edit-area-' + id).style.display = 'block';
+        e.target.style.display = 'none';
+    }
+
+    // Cancel edit
+    if (e.target.matches('.cancel-edit')) {
+        const id = e.target.dataset.storyId;
+        document.getElementById('edit-area-' + id).style.display = 'none';
+        document.querySelector('.edit-btn[data-story-id="'+id+'"]').style.display = 'inline-block';
+    }
+
+    // Save edit (AJAX)
+    if (e.target.matches('.save-edit')) {
+        const id = e.target.dataset.storyId;
+        const newContent = document.getElementById('edit-text-' + id).value.trim();
+        if (!newContent || newContent.length < 10) {
+            alert('Edited story must be at least 10 characters.');
+            return;
+        }
+        fetch(`{{ url_for('main.edit_story', story_id=0) }}`.replace('/0/', `/${id}/`), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ content: newContent })
+        }).then(r => r.json()).then(data => {
+            if (data && data.success) {
+                // update preview and hide edit
+                const container = document.getElementById('story-' + id);
+                container.querySelector('.story-content').textContent = data.content;
+                document.getElementById('edit-area-' + id).style.display = 'none';
+                document.querySelector('.edit-btn[data-story-id="'+id+'"]').style.display = 'inline-block';
+            } else {
+                alert(data.message || 'Failed to update story.');
+            }
+        }).catch(() => alert('Network error.'));
+    }
+});
+</script>
+
 
 {% endblock %}
