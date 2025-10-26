@@ -1,3 +1,4 @@
+/* Global Variables */
 :root {
     --primary-blue: #007BFF;
     --primary-hover: #0056b3;
@@ -17,6 +18,7 @@
     --danger: #dc3545;
 }
 
+/* Global Styles */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
@@ -40,6 +42,7 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+/* Header Styles */
 .header {
     position: fixed;
     top: 0;
@@ -148,6 +151,7 @@ body {
     font-weight: bold;
 }
 
+/* Auth Page Styles */
 .auth-container {
     display: flex;
     justify-content: center;
@@ -195,18 +199,7 @@ body {
     padding: 0.75rem;
 }
 
-@media (max-width: 768px) {
-    .auth-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    .form-section {
-        width: 100%;
-        max-width: 100%;
-    }
-}
-
-
+/* Story Page Styles */
 .stories-container {
     margin-top: 2rem;
 }
@@ -402,6 +395,7 @@ body {
     gap: 0.75rem;
 }
 
+/* Modal & Button Styles */
 .story-modal {
     display: none;
     position: fixed;
@@ -501,7 +495,6 @@ body {
     background: var(--dark-blue-hover);
 }
 
-
 .btn.save-edit {
     background: var(--dark-blue);
 }
@@ -518,6 +511,7 @@ body {
     background: var(--medium-gray-hover);
 }
 
+/* Alert Messages */
 .alert-message {
     padding: 1rem;
     border-radius: 6px;
@@ -542,6 +536,7 @@ body {
     border: 1px solid #f5c6cb;
 }
 
+/* Section Titles */
 .section-title {
     font-size: 1.75rem;
     font-weight: 600;
@@ -550,6 +545,7 @@ body {
     text-align: center;
 }
 
+/* Story Form */
 .story-form textarea {
     width: 100%;
     min-height: 150px;
@@ -560,11 +556,11 @@ body {
     font-size: 1rem;
     line-height: 1.6;
     margin-bottom: 1rem;
-    resize: vertical;
+    resize: none;
     box-sizing: border-box;
 }
 
-/* Emoji Display */
+/* Emoji Display Styles */
 .emoji-container {
     display: flex;
     justify-content: center;
@@ -588,14 +584,29 @@ body {
     text-align: center;
     margin: 1.5rem 0;
     line-height: 1.5;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.prompt-emoji {
+    display: inline-block;
     transition: transform 0.2s ease-in-out;
 }
 
-.emoji-prompt:hover {
-    transform: scale(1.05);
+.prompt-emoji:hover {
+    transform: scale(1.2);
     cursor: pointer;
 }
 
+.emoji-prompt-inline {
+    font-size: 1.2rem;
+    display: inline-flex;
+    gap: 0.25rem;
+    vertical-align: middle;
+}
+
+/* Profile Page Styles */
 .profile-header {
     display: flex;
     flex-direction: column;
@@ -704,6 +715,42 @@ body {
     padding: 2rem;
 }
 
+/* Homepage (base.html) Styles */
+.home-card {
+    text-align: center;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.home-tagline {
+    font-size: 1.2rem;
+    color: #555;
+    margin-top: -0.5rem;
+    margin-bottom: 2rem;
+}
+
+.home-cta-text {
+    font-size: 1.1rem;
+    color: var(--dark-text);
+    font-weight: 500;
+    margin: 2rem 0 1.5rem 0;
+}
+
+.home-cta .btn {
+    font-size: 1.1rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--dark-blue);
+    color: var(--white);
+    transition: all 0.2s ease;
+}
+
+.home-cta .btn:hover {
+    background: var(--dark-blue-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .header {
         padding: 1rem;

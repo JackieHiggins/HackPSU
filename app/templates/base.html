@@ -1,19 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="home-container">
-    <div class="content-card">
+    <div class="content-card home-card">
         <h1 class="section-title">Welcome to Glyphy!</h1>
-        <p class="intro">
-            Create short stories inspired by fun daily emojis!
+        <p class="home-tagline">
+            Your daily spark of creativity, one emoji at a time.
         </p>
         <div class="emoji-container">
             {% for emoji in emojis %}
                 <div class="emoji">{{ emoji }}</div>
             {% endfor %}
         </div>
-        <p class="message">Please sign in to post your story!</p>
-        <div class="cta-section">
-            <a href="{{ url_for('auth.login_register') }}" class="cta-button">Sign In or Register</a>
+        <p class="home-cta-text">Please sign in to write your story and join the community!</p>
+        <div class="home-cta">
+            <a href="{{ url_for('auth.login_register') }}" class="btn">Sign In or Register</a>
         </div>
     </div>
 </div>
