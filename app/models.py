@@ -8,10 +8,10 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(162))
-    current_streak = db.Column(db.Integer, default=0)  
-    last_story_date = db.Column(db.Date)  
+    current_streak = db.Column(db.Integer, default=0)
+    last_story_date = db.Column(db.Date)
     profile_pic = db.Column(db.String(200), nullable=True)
-    
+
     stories = db.relationship('Story', backref='author', lazy='dynamic')
     comments = db.relationship('Comments', backref='author', lazy='dynamic')
 
@@ -30,7 +30,7 @@ class User(UserMixin, db.Model):
         """Update user's streak based on story post date"""
         if story_date is None:
             story_date = date.today()
-            
+
         if not self.last_story_date:
             # First story ever
             self.current_streak = 1
@@ -43,39 +43,32 @@ class User(UserMixin, db.Model):
         else:
             # Missed a day, reset streak
             self.current_streak = 1
-            
+
         self.last_story_date = story_date
 
 class DailyEmoji(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     emojis = db.Column(db.String(50), nullable=False)
-    date_posted = db.Column(db.Date, unique=True, nullable=False, default=date.today) 
+    date_posted = db.Column(db.Date, unique=True, nullable=False, default=date.today)
     stories = db.relationship('Story', backref='daily_emoji_set', lazy='dynamic')
-    # Store individual emojis for easier access in templates and logic
-   # emoji_1 = db.Column(db.String(7), nullable=False)
-   # emoji_2 = db.Column(db.String(7), nullable=False)
-   # emoji_3 = db.Column(db.String(7), nullable=False)
-   # emoji_4 = db.Column(db.String(7), nullable=False)
-   # emoji_5 = db.Column(db.String(7), nullable=False)
-   # emoji_6 = db.Column(db.String(7), nullable=False)
 
 class Story(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) 
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     likes = db.Column(db.Integer, nullable=False, default=0)
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     daily_emoji_id = db.Column(db.Integer, db.ForeignKey('daily_emoji.id'))
-    
-    comments = db.relationship('Comments', backref='story', lazy='dynamic')
-    
+
+    comments = db.relationship('Comments', backref='story', lazy='dynamic', cascade="all, delete-orphan")
+
 
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(200), nullable=False)
-    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    content = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     likes = db.Column(db.Integer, nullable=False, default=0)
-    
+
     story_id = db.Column(db.Integer, db.ForeignKey('story.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

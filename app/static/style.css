@@ -6,7 +6,7 @@
     --dark-blue-hover: #1a5c9a;
     --golden-yellow: rgba(255, 193, 7, 0.85);
     --dark-orange: rgba(255, 140, 0, 0.9);
-    --dark-orange-hover: #D97706; 
+    --dark-orange-hover: #D97706;
     --white: #ffffff;
     --light-gray: #f8f9fa;
     --medium-gray: #6c757d;
@@ -24,9 +24,9 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: var(--light-cream); 
+    background-color: var(--light-cream);
     color: var(--dark-text);
-    padding-top: 100px; 
+    padding-top: 100px;
 }
 
 .main-content {
@@ -142,7 +142,7 @@ body {
 
 .streak-badge:hover {
     transform: scale(1.1);
-    filter: brightness(1.2); 
+    filter: brightness(1.2);
     cursor: pointer;
 }
 
@@ -189,7 +189,7 @@ body {
     padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 6px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
     font-size: 1rem;
 }
 
@@ -398,7 +398,7 @@ body {
     line-height: 1.6;
     margin-bottom: 0.75rem;
     box-sizing: border-box;
-    resize: none; 
+    resize: none;
 }
 
 .edit-buttons {
@@ -683,7 +683,7 @@ body {
     color: var(--medium-gray);
     font-size: 1rem;
     border-bottom: 3px solid transparent;
-    margin-bottom: -2px; 
+    margin-bottom: -2px;
     transition: all 0.2s;
 }
 
@@ -712,7 +712,7 @@ body {
     margin: 0;
     white-space: pre-wrap;
     word-wrap: break-word;
-    overflow-wrap: break-word; 
+    overflow-wrap: break-word;
 }
 
 .tab-content .post-item small {
@@ -783,4 +783,125 @@ body {
         width: 95%;
         padding: 1.5rem;
     }
+}
+
+/* === Comment Section Styles === */
+.comments-section {
+    border-top: 1px solid #eee;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+}
+
+.comments-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #444;
+}
+
+.comment-card {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.comment-meta {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.comment-meta small {
+    color: #888;
+    margin-left: 0.5rem;
+}
+
+.comment-content {
+    margin: 0 0 0.5rem 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.comment-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.comment-like-btn, .comment-edit-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px;
+}
+.comment-like-btn:hover, .comment-edit-btn:hover {
+    color: #000;
+}
+
+.comment-heart-icon {
+    font-size: 1rem;
+    color: #aaa;
+}
+.comment-heart-icon.liked {
+    color: #e91e63;
+}
+
+.comment-edit-area {
+    display: none;
+    margin-top: 0.5rem;
+}
+.comment-edit-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    margin-bottom: 0.5rem;
+}
+
+.comment-form {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+.comment-form textarea {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: none;
+    height: 40px;
+    transition: height 0.2s;
+}
+
+.comment-form textarea:focus {
+    height: 80px;
+}
+
+.comment-form button {
+    height: 40px;
+}
+
+.btn-small {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+.btn-secondary {
+    background: var(--medium-gray);
+}
+.btn-secondary:hover {
+    background: var(--medium-gray-hover);
 }
