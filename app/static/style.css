@@ -48,6 +48,7 @@ body {
     box-sizing: border-box;
     background-image: linear-gradient(to bottom, rgba(255, 215, 0, 0.92), rgba(255, 165, 0, 0.85));
     padding: 10px 20px;
+    color: var(--dark-text);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -75,6 +76,7 @@ body {
     transition: background-color 0.2s;
 }
 .nav-link:hover { background-color: rgba(0,0,0,0.05); }
+.profile-link { text-decoration: none; }
 .streak-badge {
     display: flex;
     align-items: center;
@@ -106,7 +108,21 @@ body {
     text-decoration: none; cursor: pointer; padding: 0.25rem; font-size: 0.9rem;
 }
 .btn-link:hover { text-decoration: underline; }
+
+.story-form input[type="text"] {
+    width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px;
+    box-sizing: border-box; font-size: 1rem;
+}
+.story-form textarea {
+    width: 100%; min-height: 150px; padding: 1rem; border: 1px solid #ddd;
+    border-radius: 6px; font-size: 1rem; resize: none; box-sizing: border-box;
+}
+
 .edit-area { display: none; margin: 1rem 0; }
+.edit-title-input {
+    width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px;
+    font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; box-sizing: border-box;
+}
 .edit-textarea {
     width: 100%; min-height: 120px; padding: 0.75rem; border: 1px solid #ddd;
     border-radius: 6px; font-family: inherit; font-size: 1rem;
@@ -119,61 +135,31 @@ body {
     background: var(--light-gray); border: 1px solid var(--border-color);
     border-radius: 8px; padding: 1.5rem; margin-top: 1.5rem;
 }
-.dashboard-actions {
-    margin-top: 1rem; display: flex; gap: 1rem; align-items: center;
-}
+.dashboard-actions { margin-top: 1rem; display: flex; gap: 1rem; align-items: center; }
 
 /* Stories Page (List View) */
-.story-card-link-wrapper {
-    position: relative;
-    margin-bottom: 1.5rem;
-}
-.story-card-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 8px;
-    transition: box-shadow 0.2s ease-in-out;
-}
-.story-card-link:hover .story-card {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border-color: #ccc;
-}
-.story-card {
-    background: var(--white); border: 1px solid var(--border-color); border-radius: 8px;
-    padding: 1.5rem; transition: border-color 0.2s;
-}
-.story-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 1rem; gap: 0.5rem;
-}
+.story-card-link-wrapper { position: relative; margin-bottom: 1.5rem; }
+.story-card-link { display: block; text-decoration: none; color: inherit; border-radius: 8px; transition: box-shadow 0.2s ease-in-out; }
+.story-card-link:hover .story-card { box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-color: #ccc; }
+.story-card { background: var(--white); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; transition: border-color 0.2s; }
+.story-card .story-header { margin-bottom: 1rem; }
+.story-title-list { font-size: 1.25rem; font-weight: 600; color: var(--dark-text); display: block; margin-bottom: 0.25rem; }
+.author-name { font-size: 0.9rem; color: var(--medium-gray); }
 .author-name.is-you { color: var(--dark-orange); font-weight: 600; }
-.story-timestamp { font-size: 0.85rem; color: #666; }
-.story-content.truncated {
-    max-height: 6.5em; overflow: hidden; position: relative;
-    margin-bottom: 0.5rem;
-}
-.story-card-footer {
-    text-align: center; color: var(--medium-gray); font-style: italic;
-    font-size: 0.9rem; margin-top: 1rem;
-    border-top: 1px solid var(--border-color); padding-top: 1rem;
-}
-.story-actions-standalone {
-    position: absolute;
-    bottom: 2rem;
-    right: 1.5rem;
-}
-.heart-btn {
-    background: #f0f0f0; border: none; padding: 0.4rem 0.8rem; cursor: pointer;
-    display: flex; align-items: center; gap: 0.5rem; border-radius: 20px;
-    transition: background-color 0.2s;
-}
+.story-content.truncated { max-height: 4.8em; overflow: hidden; }
+.story-card-footer { text-align: center; color: var(--medium-gray); font-style: italic; font-size: 0.9rem; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem; }
+.story-actions-standalone { position: absolute; bottom: 2rem; right: 1.5rem; }
+.heart-btn { background: #f0f0f0; border: none; padding: 0.4rem 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; border-radius: 20px; transition: background-color 0.2s; }
 .heart-btn:hover { background-color: #e0e0e0; }
 .heart-icon { font-size: 1.1rem; color: #999; }
 .heart-icon.liked { color: #e91e63; }
 
 /* Story Detail Page */
-.story-detail-card { margin-bottom: 2rem; }
+.prompt-display-header { text-align: center; padding: 1rem; background-color: var(--light-gray); border-radius: 8px; margin-bottom: 2rem; }
+.prompt-title { margin-top: 0; color: var(--dark-text); }
+.story-detail-card .story-header { text-align: center; margin-bottom: 1.5rem; }
+.story-title-detail { font-size: 2rem; margin-bottom: 0.5rem; }
+.story-detail-card .story-meta { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem; }
 .story-content-full { white-space: pre-wrap; line-height: 1.7; font-size: 1.1rem; }
 
 /* Comments Section */
@@ -196,30 +182,25 @@ body {
 .comment-form button { height: 45px; }
 .btn-small { padding: 0.3rem 0.8rem; font-size: 0.85rem; }
 
-/* Profile Page */
-.profile-page .content-card { margin-bottom: 2rem; }
-.profile-header-card { display: flex; align-items: center; gap: 2rem; }
-.profile-pic-wrapper label { cursor: pointer; display: block; }
-.profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--dark-blue); transition: filter 0.2s; }
-.profile-pic:hover { filter: brightness(0.9); }
-.profile-info h2 { margin: 0 0 0.25rem 0; }
-.profile-info p { margin: 0; color: var(--medium-gray); }
-.profile-section h3 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
-.profile-item-list { display: flex; flex-direction: column; gap: 1rem; }
-.profile-item, .profile-item-comment, .profile-item-like {
-    padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px;
-    background: var(--light-gray);
-}
-.profile-item-footer {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #ddd;
-    color: var(--medium-gray);
-}
-.profile-item-footer > div { display: flex; gap: 1rem; }
-.profile-item-comment blockquote { margin: 0.5rem 0; padding-left: 1rem; border-left: 3px solid #ccc; font-style: italic; }
+/* Profile Page (Tab System Restored) */
+.profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 2rem; }
+.profile-pic-wrapper { position: relative; text-align: center; }
+.profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--dark-blue); }
+.profile-pic-wrapper small { color: #666; font-size: 0.9em; margin-top: 10px; display: block; }
+.profile-header h2 { margin: 10px 0 0 0; }
+.profile-header p { color: #555; margin: 5px 0 0 0; }
+.profile-tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 1.5rem; }
+.tab-button { flex: 1; padding: 1rem 0.5rem; background: none; border: none; font-weight: 600; cursor: pointer; color: var(--medium-gray); font-size: 1rem; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.tab-button:hover { color: var(--dark-text); }
+.tab-button.active { color: var(--dark-blue); border-bottom-color: var(--dark-blue); }
+.tab-content .post-item { background: #fdfdfd; border: 1px solid #eee; border-radius: 8px; padding: 1rem; margin-bottom: 10px; }
+.tab-content .post-item p { margin: 0 0 0.5rem 0; }
 .no-content { color: #777; text-align: center; padding: 2rem; }
+.profile-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid #ddd; }
+.profile-item-footer > div { display: flex; gap: 1rem; }
 
 /* Emoji & Misc */
-.emoji-prompt { font-size: 4rem; text-align: center; margin: 1.5rem 0; display: flex; justify-content: center; gap: 1rem; }
+.emoji-prompt { font-size: 3rem; text-align: center; margin: 1.5rem 0; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.stories-page-prompt { font-size: 2.5rem; }
 .prompt-emoji:hover { transform: scale(1.2); cursor: pointer; transition: transform 0.2s; }
 .section-title { font-size: 1.75rem; text-align: center; margin-bottom: 1.5rem; }

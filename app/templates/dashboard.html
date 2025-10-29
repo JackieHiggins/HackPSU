@@ -15,13 +15,14 @@
     {% if user_story %}
         <h3>You've submitted your story for today!</h3>
         <div class="submitted-story-card" id="story-{{ user_story.id }}">
-            <h4>Your Submission:</h4>
+            <h4 class="story-title" data-story-id="{{ user_story.id }}">{{ user_story.title }}</h4>
             
             <div class="story-content" data-story-id="{{ user_story.id }}">
                 {{ user_story.content }}
             </div>
             
             <div class="edit-area" data-story-id="{{ user_story.id }}">
+                <input type="text" class="edit-title-input" value="{{ user_story.title }}">
                 <textarea class="edit-textarea">{{ user_story.content }}</textarea>
                 <div class="edit-buttons">
                     <button class="btn save-edit" data-story-id="{{ user_story.id }}">Save</button>
@@ -38,6 +39,9 @@
         <h3>Submit Your Story</h3>
         <form action="{{ url_for('main.submit_story') }}" method="POST" class="story-form">
             <p>
+                <input type="text" name="story_title" placeholder="Enter a title for your story" required>
+            </p>
+            <p>
                 <textarea name="story_content" placeholder="Once upon a time..."></textarea>
             </p>
             <p>
@@ -52,35 +56,36 @@
 <script>
 document.addEventListener('click', function(e) {
     const storyId = "{{ user_story.id }}";
+    const editArea = document.querySelector(`.edit-area[data-story-id='${storyId}']`);
 
-    // Show edit area
     if (e.target.matches('.edit-btn')) {
-        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'block';
+        editArea.style.display = 'block';
         document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'none';
+        document.querySelector(`.story-title[data-story-id='${storyId}']`).style.display = 'none';
         e.target.style.display = 'none';
     }
 
-    // Cancel edit
     if (e.target.matches('.cancel-edit')) {
-        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'none';
+        editArea.style.display = 'none';
         document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'block';
+        document.querySelector(`.story-title[data-story-id='${storyId}']`).style.display = 'block';
         document.querySelector('.edit-btn').style.display = 'inline-block';
     }
 
-    // Save edit
     if (e.target.matches('.save-edit')) {
-        const newContent = document.querySelector(`.edit-area[data-story-id='${storyId}'] textarea`).value.trim();
-        if (newContent.length < 10) {
-            alert('Story must be at least 10 characters.');
-            return;
-        }
+        const newTitle = editArea.querySelector('.edit-title-input').value.trim();
+        const newContent = editArea.querySelector('.edit-textarea').value.trim();
+        
+        if (!newTitle) { alert('Title cannot be empty.'); return; }
+        if (newContent.length < 10) { alert('Story must be at least 10 characters.'); return; }
 
         fetch(`/stories/${storyId}/edit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: newContent })
+            body: JSON.stringify({ title: newTitle, content: newContent })
         }).then(r => r.json()).then(data => {
             if (data.success) {
+                document.querySelector(`.story-title[data-story-id='${storyId}']`).textContent = data.title;
                 document.querySelector(`.story-content[data-story-id='${storyId}']`).textContent = data.content;
                 document.querySelector('.cancel-edit').click();
             } else {

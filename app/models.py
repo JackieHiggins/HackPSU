@@ -32,16 +32,12 @@ class User(UserMixin, db.Model):
             story_date = date.today()
 
         if not self.last_story_date:
-            # First story ever
             self.current_streak = 1
         elif story_date == self.last_story_date:
-            # Already posted today, don't update streak
             return
         elif story_date == self.last_story_date + timedelta(days=1):
-            # Posted on consecutive day, increment streak
             self.current_streak += 1
         else:
-            # Missed a day, reset streak
             self.current_streak = 1
 
         self.last_story_date = story_date
@@ -54,6 +50,7 @@ class DailyEmoji(db.Model):
 
 class Story(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False) # <-- ADDED
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     likes = db.Column(db.Integer, nullable=False, default=0)
@@ -62,7 +59,6 @@ class Story(db.Model):
     daily_emoji_id = db.Column(db.Integer, db.ForeignKey('daily_emoji.id'))
 
     comments = db.relationship('Comments', backref='story', lazy='dynamic', cascade="all, delete-orphan")
-
 
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)

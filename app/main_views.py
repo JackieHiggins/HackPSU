@@ -118,10 +118,19 @@ def dashboard():
 @main.route('/submit', methods=['POST'])
 @login_required
 def submit_story():
+    story_title = request.form.get('story_title')
     story_content = request.form.get('story_content')
     daily_emojis_obj = get_or_create_daily_prompt()
 
-    if moderation_enabled and gemini_model and story_content:
+    if not story_title or len(story_title.strip()) < 1:
+        flash("Your story must have a title.", "warning")
+        return redirect(url_for('main.dashboard'))
+    
+    if not story_content or len(story_content) < 10:
+        flash("Your story must be at least 10 characters long.", "warning")
+        return redirect(url_for('main.dashboard'))
+
+    if moderation_enabled and gemini_model:
         try:
             emojis_for_prompt = daily_emojis_obj.emojis if daily_emojis_obj else ''
             prompt = f"""
@@ -145,12 +154,8 @@ def submit_story():
     if Story.query.filter_by(author=current_user, daily_emoji_id=daily_emojis_obj.id).first():
         return redirect(url_for('main.stories'))
 
-    if not story_content or len(story_content) < 10:
-        flash("Your story must be at least 10 characters long.", "warning")
-        return redirect(url_for('main.dashboard'))
-
     try:
-        new_story = Story(content=story_content, author=current_user, daily_emoji_id=daily_emojis_obj.id)
+        new_story = Story(title=story_title, content=story_content, author=current_user, daily_emoji_id=daily_emojis_obj.id)
         current_user.update_streak(date.today())
         db.session.add(new_story)
         db.session.commit()
@@ -182,11 +187,13 @@ def stories():
 @login_required
 def story_detail(story_id):
     story = Story.query.get_or_404(story_id)
+    prompt = DailyEmoji.query.get(story.daily_emoji_id)
     comments = Comments.query.filter_by(story_id=story.id).order_by(Comments.timestamp.asc()).all()
     liked_stories = session.get('liked_stories', [])
     liked_comments = session.get('liked_comments', [])
     return render_template('story_detail.html',
                            story=story,
+                           prompt=prompt,
                            comments=comments,
                            liked_stories=liked_stories,
                            liked_comments=liked_comments)
@@ -278,7 +285,7 @@ def profile():
         return redirect(url_for('main.profile'))
 
     user_posts = Story.query.filter_by(author=current_user).order_by(Story.timestamp.desc()).all()
-    user_comments = db.session.query(Comments, Story.content.label('story_content')).join(Story, Comments.story_id == Story.id).filter(Comments.user_id == current_user.id).order_by(Comments.timestamp.desc()).all()
+    user_comments = db.session.query(Comments, Story.title.label('story_title')).join(Story, Comments.story_id == Story.id).filter(Comments.user_id == current_user.id).order_by(Comments.timestamp.desc()).all()
     
     liked_ids = session.get('liked_stories', [])
     user_likes = Story.query.filter(Story.id.in_(liked_ids)).all() if liked_ids else []
@@ -306,14 +313,19 @@ def about():
 def edit_story(story_id):
     story = Story.query.get_or_404(story_id)
     if story.user_id != current_user.id:
-        flash("You are not authorized to edit this story.", "danger")
         return jsonify({'success': False, 'message': 'Not authorized.'}), 403
 
-    new_content = request.json.get('content', '').strip()
+    data = request.get_json()
+    new_title = data.get('title', '').strip()
+    new_content = data.get('content', '').strip()
+
+    if not new_title:
+        return jsonify({'success': False, 'message': 'Title cannot be empty.'}), 400
     if not new_content or len(new_content) < 10:
         return jsonify({'success': False, 'message': 'Story must be at least 10 characters long.'}), 400
 
+    story.title = new_title
     story.content = new_content
     db.session.commit()
-    flash("Your story has been updated.", "success")
-    return jsonify({'success': True, 'content': story.content})
+    
+    return jsonify({'success': True, 'title': story.title, 'content': story.content})

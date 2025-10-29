@@ -17,14 +17,10 @@
                     <a href="{{ url_for('main.story_detail', story_id=story.id) }}" class="story-card-link">
                         <div class="story-card" id="story-{{ story.id }}">
                             <div class="story-header">
-                                <div class="author-info">
-                                    <span class="author-name {% if story.user_id == current_user.id %}is-you{% endif %}">
-                                        {{ story.author.username }}
-                                    </span>
-                                </div>
-                                <div class="story-meta">
-                                    <span class="story-timestamp">{{ story.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
-                                </div>
+                                <h3 class="story-title-list">{{ story.title }}</h3>
+                                <span class="author-name {% if story.user_id == current_user.id %}is-you{% endif %}">
+                                    by {{ story.author.username }}
+                                </span>
                             </div>
                             <div class="story-content truncated">
                                 {{ story.content }}

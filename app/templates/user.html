@@ -1,131 +1,136 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="profile-page">
-    <div class="content-card profile-header-card">
+<div class="content-card">
+    <div class="profile-header">
         <div class="profile-pic-wrapper">
-            <form id="profile-pic-form" action="{{ url_for('main.profile') }}" method="POST" enctype="multipart/form-data" title="Click to change picture">
+            <form id="profile-pic-form" action="{{ url_for('main.profile') }}" method="POST" enctype="multipart/form-data">
                 <label for="profile-pic-input">
                     <img src="{{ url_for('static', filename=(current_user.profile_pic or 'images/default_pfp.png')) }}"
                          alt="Profile Picture" class="profile-pic">
                 </label>
                 <input type="file" id="profile-pic-input" name="profile_pic" accept="image/*"
-                       style="display:none;" onchange="this.form.submit();">
+                       style="display:none;" onchange="document.getElementById('profile-pic-form').submit();">
             </form>
+            <small>Click image to change</small>
         </div>
-        <div class="profile-info">
-            <h2>{{ current_user.username }}</h2>
-            <p>{{ current_user.email }}</p>
-        </div>
+        <h2>{{ current_user.username }}</h2>
+        <p><strong>Email:</strong> {{ current_user.email }}</p>
     </div>
 
-    <div class="content-card profile-section">
-        <h3>My Stories</h3>
+    <div class="profile-tabs">
+        <button class="tab-button active" onclick="showTab('posts')">Posts</button>
+        <button class="tab-button" onclick="showTab('comments')">Comments</button>
+        <button class="tab-button" onclick="showTab('likes')">Likes</button>
+    </div>
+
+    <div id="posts" class="tab-content">
         {% if user_posts %}
-            <div class="profile-item-list">
-                {% for post in user_posts %}
-                    <div class="profile-item" id="story-{{ post.id }}">
-                        <div class="story-content" data-story-id="{{ post.id }}">{{ post.content }}</div>
-                        <div class="edit-area" data-story-id="{{ post.id }}">
-                             <textarea class="edit-textarea">{{ post.content }}</textarea>
-                             <div class="edit-buttons">
-                                 <button class="btn save-edit" data-story-id="{{ post.id }}">Save</button>
-                                 <button class="btn cancel-edit" data-story-id="{{ post.id }}">Cancel</button>
-                             </div>
-                        </div>
-                        <div class="profile-item-footer">
-                            <small>Posted on {{ post.timestamp.strftime('%Y-%m-%d') }}</small>
-                            <div>
-                                <button class="btn-link edit-btn" data-story-id="{{ post.id }}">Edit</button>
-                                <a href="{{ url_for('main.story_detail', story_id=post.id) }}" class="btn-link">View Thread</a>
-                            </div>
+            {% for post in user_posts %}
+                <div class="post-item" id="story-{{ post.id }}">
+                    <h4 class="story-title" data-story-id="{{ post.id }}">{{ post.title }}</h4>
+                    <p class="story-content" data-story-id="{{ post.id }}">{{ post.content }}</p>
+                    <div class="edit-area" data-story-id="{{ post.id }}">
+                         <input type="text" class="edit-title-input" value="{{ post.title }}">
+                         <textarea class="edit-textarea">{{ post.content }}</textarea>
+                         <div class="edit-buttons">
+                             <button class="btn save-edit" data-story-id="{{ post.id }}">Save</button>
+                             <button class="btn cancel-edit" data-story-id="{{ post.id }}">Cancel</button>
+                         </div>
+                    </div>
+                    <div class="profile-item-footer">
+                        <small>Posted on {{ post.timestamp.strftime('%Y-%m-%d') }}</small>
+                        <div>
+                            <button class="btn-link edit-btn" data-story-id="{{ post.id }}">Edit</button>
+                            <a href="{{ url_for('main.story_detail', story_id=post.id) }}" class="btn-link">View Thread</a>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         {% else %}
-            <p class="no-content">You haven't posted any stories yet.</p>
+            <p class="no-content">No posts yet.</p>
         {% endif %}
     </div>
 
-    <div class="content-card profile-section">
-        <h3>My Comments</h3>
+    <div id="comments" class="tab-content" style="display:none;">
         {% if user_comments %}
-            <div class="profile-item-list">
-                {% for comment, story_content in user_comments %}
-                    <div class="profile-item-comment">
-                        <p class="comment-context">Your comment on "<em>{{ story_content|truncate(60) }}</em>":</p>
-                        <blockquote>"{{ comment.content }}"</blockquote>
-                        <div class="profile-item-footer">
-                            <small>Commented on {{ comment.timestamp.strftime('%Y-%m-%d') }}</small>
-                            <a href="{{ url_for('main.story_detail', story_id=comment.story_id) }}#comment-{{comment.id}}" class="btn-link">View Comment</a>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
+            {% for comment, story_title in user_comments %}
+                <div class="post-item">
+                    <p>On: <a href="{{ url_for('main.story_detail', story_id=comment.story_id) }}#comment-{{comment.id}}"><strong>{{ story_title }}</strong></a></p>
+                    <p>"{{ comment.content }}"</p>
+                    <small>Commented on {{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+            {% endfor %}
         {% else %}
-            <p class="no-content">You haven't made any comments yet.</p>
+            <p class="no-content">No comments yet.</p>
         {% endif %}
     </div>
-    
-    <div class="content-card profile-section">
-        <h3>My Liked Stories</h3>
+
+    <div id="likes" class="tab-content" style="display:none;">
         {% if user_likes %}
-            <div class="profile-item-list">
-                 {% for like in user_likes %}
-                    <div class="profile-item-like">
-                        <p>❤️ Liked <strong>{{ like.author.username }}'s</strong> story: "<em>{{ like.content|truncate(60) }}</em>"</p>
-                        <div class="profile-item-footer">
-                             <small>Posted on {{ like.timestamp.strftime('%Y-%m-%d') }}</small>
-                             <a href="{{ url_for('main.story_detail', story_id=like.id) }}" class="btn-link">View Story</a>
-                        </div>
-                    </div>
-                 {% endfor %}
-            </div>
+            {% for like in user_likes %}
+                <div class="post-item">
+                    <p>❤️ Liked: <a href="{{ url_for('main.story_detail', story_id=like.id) }}"><strong>{{ like.title }}</strong></a> by {{ like.author.username }}</p>
+                    <small>Posted on {{ like.timestamp.strftime('%Y-%m-%d') }}</small>
+                </div>
+            {% endfor %}
         {% else %}
-             <p class="no-content">You haven't liked any stories yet.</p>
+            <p class="no-content">No likes yet.</p>
         {% endif %}
     </div>
 </div>
 
 <script>
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabName).style.display = 'block';
+    const clickedButton = document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`);
+    if(clickedButton) clickedButton.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded', function() { showTab('posts'); });
+
 document.addEventListener('click', function(e) {
-    // Show edit area
     const editBtn = e.target.closest('.edit-btn');
     if (editBtn) {
         const storyId = editBtn.dataset.storyId;
-        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'block';
-        document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'none';
-        editBtn.style.display = 'none';
+        const storyItem = document.getElementById(`story-${storyId}`);
+        storyItem.querySelector('.edit-area').style.display = 'block';
+        storyItem.querySelector('.story-content').style.display = 'none';
+        storyItem.querySelector('.story-title').style.display = 'none';
+        storyItem.querySelector('.profile-item-footer').style.display = 'none';
     }
 
-    // Cancel edit
     const cancelBtn = e.target.closest('.cancel-edit');
     if (cancelBtn) {
         const storyId = cancelBtn.dataset.storyId;
-        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'none';
-        document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'block';
-        document.querySelector(`.edit-btn[data-story-id='${storyId}']`).style.display = 'inline-block';
+        const storyItem = document.getElementById(`story-${storyId}`);
+        storyItem.querySelector('.edit-area').style.display = 'none';
+        storyItem.querySelector('.story-content').style.display = 'block';
+        storyItem.querySelector('.story-title').style.display = 'block';
+        storyItem.querySelector('.profile-item-footer').style.display = 'flex';
     }
 
-    // Save edit
     const saveBtn = e.target.closest('.save-edit');
     if (saveBtn) {
         const storyId = saveBtn.dataset.storyId;
-        const newContent = document.querySelector(`.edit-area[data-story-id='${storyId}'] textarea`).value.trim();
-        if (newContent.length < 10) {
-            alert('Story must be at least 10 characters.');
-            return;
-        }
+        const editArea = document.querySelector(`.edit-area[data-story-id='${storyId}']`);
+        const newTitle = editArea.querySelector('.edit-title-input').value.trim();
+        const newContent = editArea.querySelector('textarea').value.trim();
+        
+        if (!newTitle) { alert('Title cannot be empty.'); return; }
+        if (newContent.length < 10) { alert('Story must be at least 10 characters.'); return; }
 
         fetch(`/stories/${storyId}/edit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: newContent })
+            body: JSON.stringify({ title: newTitle, content: newContent })
         }).then(r => r.json()).then(data => {
             if (data.success) {
-                document.querySelector(`.story-content[data-story-id='${storyId}']`).textContent = data.content;
-                document.querySelector(`.cancel-edit[data-story-id='${storyId}']`).click();
+                const storyItem = document.getElementById(`story-${storyId}`);
+                storyItem.querySelector('.story-title').textContent = data.title;
+                storyItem.querySelector('.story-content').textContent = data.content;
+                storyItem.querySelector('.cancel-edit').click();
             } else {
                 alert(data.message || 'Failed to update story.');
             }
