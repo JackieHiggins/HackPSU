@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="content-card">
+    <div class="story-detail-card" id="story-{{ story.id }}">
+        <div class="story-header">
+            <div class="author-info">
+                <span class="author-name">{{ story.author.username }}</span>
+            </div>
+            <div class="story-meta">
+                <span class="story-timestamp">{{ story.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                <div class="story-actions">
+                    <button class="heart-btn" data-story-id="{{ story.id }}" aria-label="like">
+                        <span class="heart-icon {% if story.id in liked_stories %}liked{% endif %}">❤</span>
+                        <span class="likes-count">{{ story.likes }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="story-content-full">
+            {{ story.content }}
+        </div>
+    </div>
+
+    <div class="comments-section">
+        <h3 class="comments-title">Comments ({{ comments|length }})</h3>
+        <div class="comments-container" id="comments-container">
+            {% for comment in comments %}
+            <div class="comment-card" id="comment-{{ comment.id }}">
+                <p class="comment-meta">
+                    <strong>{{ comment.author.username }}</strong>
+                    <small>{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                </p>
+                <div class="comment-content" data-comment-id="{{ comment.id }}">{{ comment.content }}</div>
+
+                <div class="comment-actions">
+                    <button class="comment-like-btn" data-comment-id="{{ comment.id }}">
+                        <span class="comment-heart-icon {% if comment.id in liked_comments %}liked{% endif %}">❤</span>
+                        <span class="comment-likes-count">{{ comment.likes }}</span>
+                    </button>
+                    {% if comment.user_id == current_user.id %}
+                    <button class="comment-edit-btn" data-comment-id="{{ comment.id }}">Edit</button>
+                    {% endif %}
+                </div>
+
+                <div class="comment-edit-area" data-comment-id="{{ comment.id }}">
+                    <textarea class="comment-edit-textarea">{{ comment.content }}</textarea>
+                    <button class="btn btn-small save-comment-edit" data-comment-id="{{ comment.id }}">Save</button>
+                    <button class="btn btn-small btn-secondary cancel-comment-edit" data-comment-id="{{ comment.id }}">Cancel</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form class="comment-form" id="comment-form">
+            <textarea name="content" placeholder="Add a comment..." required></textarea>
+            <button type="submit" class="btn">Comment</button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Story Liking
+    document.querySelector('.heart-btn').addEventListener('click', function() {
+        const storyId = this.dataset.storyId;
+        fetch(`/stories/${storyId}/like`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                this.querySelector('.likes-count').textContent = data.likes;
+                const heart = this.querySelector('.heart-icon');
+                heart.classList.toggle('liked', data.liked);
+            });
+    });
+
+    const commentsContainer = document.getElementById('comments-container');
+
+    // Comment Actions (Liking, Editing) via Event Delegation
+    commentsContainer.addEventListener('click', function(e) {
+        const target = e.target;
+
+        // Comment Liking
+        const likeBtn = target.closest('.comment-like-btn');
+        if (likeBtn) {
+            const commentId = likeBtn.dataset.commentId;
+            fetch(`/comment/${commentId}/like`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    likeBtn.querySelector('.comment-likes-count').textContent = data.likes;
+                    likeBtn.querySelector('.comment-heart-icon').classList.toggle('liked', data.liked);
+                });
+        }
+
+        // Show Edit Area
+        const editBtn = target.closest('.comment-edit-btn');
+        if (editBtn) {
+            const commentId = editBtn.dataset.commentId;
+            const commentCard = document.getElementById(`comment-${commentId}`);
+            commentCard.querySelector('.comment-edit-area').style.display = 'block';
+            commentCard.querySelector('.comment-content').style.display = 'none';
+            editBtn.style.display = 'none';
+        }
+        
+        // Cancel Edit
+        const cancelBtn = target.closest('.cancel-comment-edit');
+        if (cancelBtn) {
+            const commentId = cancelBtn.dataset.commentId;
+            const commentCard = document.getElementById(`comment-${commentId}`);
+            commentCard.querySelector('.comment-edit-area').style.display = 'none';
+            commentCard.querySelector('.comment-content').style.display = 'block';
+            commentCard.querySelector('.comment-edit-btn').style.display = 'inline-block';
+        }
+
+        // Save Edit
+        const saveBtn = target.closest('.save-comment-edit');
+        if (saveBtn) {
+            const commentId = saveBtn.dataset.commentId;
+            const commentCard = document.getElementById(`comment-${commentId}`);
+            const newContent = commentCard.querySelector('.comment-edit-textarea').value;
+            fetch(`/comment/${commentId}/edit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: newContent })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    commentCard.querySelector('.comment-content').textContent = data.content;
+                    commentCard.querySelector('.cancel-comment-edit').click();
+                } else {
+                    alert(data.message || 'Error saving comment.');
+                }
+            });
+        }
+    });
+
+    // Add New Comment
+    document.getElementById('comment-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const storyId = "{{ story.id }}";
+        const formData = new FormData(this);
+        
+        fetch(`/story/${storyId}/comment`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const newComment = data.comment;
+                const commentHTML = `
+                <div class="comment-card" id="comment-${newComment.id}">
+                    <p class="comment-meta">
+                        <strong>${newComment.username}</strong> <small>${newComment.timestamp}</small>
+                    </p>
+                    <div class="comment-content" data-comment-id="${newComment.id}">${newComment.content}</div>
+                    <div class="comment-actions">
+                        <button class="comment-like-btn" data-comment-id="${newComment.id}">
+                            <span class="comment-heart-icon">❤</span>
+                            <span class="comment-likes-count">0</span>
+                        </button>
+                        <button class="comment-edit-btn" data-comment-id="${newComment.id}">Edit</button>
+                    </div>
+                    <div class="comment-edit-area" data-comment-id="${newComment.id}">
+                        <textarea class="comment-edit-textarea">${newComment.content}</textarea>
+                        <button class="btn btn-small save-comment-edit" data-comment-id="${newComment.id}">Save</button>
+                        <button class="btn btn-small btn-secondary cancel-comment-edit" data-comment-id="${newComment.id}">Cancel</button>
+                    </div>
+                </div>`;
+                commentsContainer.insertAdjacentHTML('beforeend', commentHTML);
+                this.reset();
+            } else {
+                alert(data.message || 'Could not post comment.');
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

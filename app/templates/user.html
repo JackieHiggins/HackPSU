@@ -1,102 +1,136 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="content-card">
-
-    <div class="profile-header">
+<div class="profile-page">
+    <div class="content-card profile-header-card">
         <div class="profile-pic-wrapper">
-            <form id="profile-pic-form" action="{{ url_for('main.profile') }}" method="POST" enctype="multipart/form-data">
+            <form id="profile-pic-form" action="{{ url_for('main.profile') }}" method="POST" enctype="multipart/form-data" title="Click to change picture">
                 <label for="profile-pic-input">
-                    <img src="{{ current_user.profile_pic or url_for('static', filename='images/default_pfp.png') }}"
-                         alt="Profile Picture"
-                         class="profile-pic">
+                    <img src="{{ url_for('static', filename=(current_user.profile_pic or 'images/default_pfp.png')) }}"
+                         alt="Profile Picture" class="profile-pic">
                 </label>
                 <input type="file" id="profile-pic-input" name="profile_pic" accept="image/*"
-                       style="display:none;" onchange="document.getElementById('profile-pic-form').submit();">
+                       style="display:none;" onchange="this.form.submit();">
             </form>
-            <small>Click the image to change your picture</small>
         </div>
-
-        <h2>{{ current_user.username }}</h2>
-
-        <p>
-            <strong>Email:</strong> {{ current_user.email }}
-        </p>
+        <div class="profile-info">
+            <h2>{{ current_user.username }}</h2>
+            <p>{{ current_user.email }}</p>
+        </div>
     </div>
 
-    <div class="profile-tabs">
-        <button class="tab-button active" onclick="showTab('posts')">Posts</button>
-        <button class="tab-button" onclick="showTab('comments')">Comments</button>
-        <button class="tab-button" onclick="showTab('likes')">Likes</button>
-    </div>
-
-    <div id="posts" class="tab-content">
+    <div class="content-card profile-section">
+        <h3>My Stories</h3>
         {% if user_posts %}
-            {% for post in user_posts %}
-                <div class="post-item">
-                    <p>{{ post.content }}</p>
-                    <small>{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
-                </div>
-            {% endfor %}
+            <div class="profile-item-list">
+                {% for post in user_posts %}
+                    <div class="profile-item" id="story-{{ post.id }}">
+                        <div class="story-content" data-story-id="{{ post.id }}">{{ post.content }}</div>
+                        <div class="edit-area" data-story-id="{{ post.id }}">
+                             <textarea class="edit-textarea">{{ post.content }}</textarea>
+                             <div class="edit-buttons">
+                                 <button class="btn save-edit" data-story-id="{{ post.id }}">Save</button>
+                                 <button class="btn cancel-edit" data-story-id="{{ post.id }}">Cancel</button>
+                             </div>
+                        </div>
+                        <div class="profile-item-footer">
+                            <small>Posted on {{ post.timestamp.strftime('%Y-%m-%d') }}</small>
+                            <div>
+                                <button class="btn-link edit-btn" data-story-id="{{ post.id }}">Edit</button>
+                                <a href="{{ url_for('main.story_detail', story_id=post.id) }}" class="btn-link">View Thread</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <p class="no-content">No posts yet.</p>
+            <p class="no-content">You haven't posted any stories yet.</p>
         {% endif %}
     </div>
 
-    <div id="comments" class="tab-content" style="display:none;">
+    <div class="content-card profile-section">
+        <h3>My Comments</h3>
         {% if user_comments %}
-            {% for comment in user_comments %}
-                <div class="post-item">
-                    <p><strong>On:</strong> <a href="{{ url_for('main.stories') }}#story-{{ comment.story_id }}">{{ comment.post_title }}</a></p>
-                    <p>{{ comment.content }}</p>
-                    <small>{{ comment.date_posted }}</small>
-                </div>
-            {% endfor %}
+            <div class="profile-item-list">
+                {% for comment, story_content in user_comments %}
+                    <div class="profile-item-comment">
+                        <p class="comment-context">Your comment on "<em>{{ story_content|truncate(60) }}</em>":</p>
+                        <blockquote>"{{ comment.content }}"</blockquote>
+                        <div class="profile-item-footer">
+                            <small>Commented on {{ comment.timestamp.strftime('%Y-%m-%d') }}</small>
+                            <a href="{{ url_for('main.story_detail', story_id=comment.story_id) }}#comment-{{comment.id}}" class="btn-link">View Comment</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <p class="no-content">No comments yet.</p>
+            <p class="no-content">You haven't made any comments yet.</p>
         {% endif %}
     </div>
-
-    <div id="likes" class="tab-content" style="display:none;">
+    
+    <div class="content-card profile-section">
+        <h3>My Liked Stories</h3>
         {% if user_likes %}
-            {% for like in user_likes %}
-                <div class="post-item">
-                    <p>❤️ Liked: <strong><a href="{{ url_for('main.stories') }}#story-{{ like.story_id }}">{{ like.post_title }}</a></strong></p>
-                    <small>{{ like.date_liked }}</small>
-                </div>
-            {% endfor %}
+            <div class="profile-item-list">
+                 {% for like in user_likes %}
+                    <div class="profile-item-like">
+                        <p>❤️ Liked <strong>{{ like.author.username }}'s</strong> story: "<em>{{ like.content|truncate(60) }}</em>"</p>
+                        <div class="profile-item-footer">
+                             <small>Posted on {{ like.timestamp.strftime('%Y-%m-%d') }}</small>
+                             <a href="{{ url_for('main.story_detail', story_id=like.id) }}" class="btn-link">View Story</a>
+                        </div>
+                    </div>
+                 {% endfor %}
+            </div>
         {% else %}
-            <p class="no-content">No likes yet.</p>
+             <p class="no-content">You haven't liked any stories yet.</p>
         {% endif %}
     </div>
 </div>
 
 <script>
-function showTab(tabName) {
-    // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-    // Remove active state from all buttons
-    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-    // Show the selected tab and highlight its button
-    document.getElementById(tabName).style.display = 'block';
+document.addEventListener('click', function(e) {
+    // Show edit area
+    const editBtn = e.target.closest('.edit-btn');
+    if (editBtn) {
+        const storyId = editBtn.dataset.storyId;
+        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'block';
+        document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'none';
+        editBtn.style.display = 'none';
+    }
 
-    // Find the button that was clicked and add 'active' class
-    const buttons = document.querySelectorAll('.tab-button');
-    buttons.forEach(button => {
-        if (button.getAttribute('onclick') === `showTab('${tabName}')`) {
-            button.classList.add('active');
+    // Cancel edit
+    const cancelBtn = e.target.closest('.cancel-edit');
+    if (cancelBtn) {
+        const storyId = cancelBtn.dataset.storyId;
+        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'none';
+        document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'block';
+        document.querySelector(`.edit-btn[data-story-id='${storyId}']`).style.display = 'inline-block';
+    }
+
+    // Save edit
+    const saveBtn = e.target.closest('.save-edit');
+    if (saveBtn) {
+        const storyId = saveBtn.dataset.storyId;
+        const newContent = document.querySelector(`.edit-area[data-story-id='${storyId}'] textarea`).value.trim();
+        if (newContent.length < 10) {
+            alert('Story must be at least 10 characters.');
+            return;
         }
-    });
-}
 
-// Ensure the first tab is shown on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // A bit safer to find the element and then click
-    const activeButton = document.querySelector('.tab-button.active');
-    if (activeButton) {
-        activeButton.click();
+        fetch(`/stories/${storyId}/edit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: newContent })
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                document.querySelector(`.story-content[data-story-id='${storyId}']`).textContent = data.content;
+                document.querySelector(`.cancel-edit[data-story-id='${storyId}']`).click();
+            } else {
+                alert(data.message || 'Failed to update story.');
+            }
+        });
     }
 });
 </script>
-
 {% endblock %}

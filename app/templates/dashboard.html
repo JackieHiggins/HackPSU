@@ -13,17 +13,28 @@
     </div>
 
     {% if user_story %}
-    <h3>You've submitted your story for today!</h3>
-        <div class="submitted-story-card">
-        <h4>Your Submission:</h4>
-        <div class="submitted-story-content">
-            {{ user_story.content }}
-        </div>
-    </div>
-    <p>Great work! Now you can go read what others wrote.</p>
-    <a href="{{ url_for('main.stories') }}" class="view_stories_btn">View All Stories</a>
+        <h3>You've submitted your story for today!</h3>
+        <div class="submitted-story-card" id="story-{{ user_story.id }}">
+            <h4>Your Submission:</h4>
+            
+            <div class="story-content" data-story-id="{{ user_story.id }}">
+                {{ user_story.content }}
+            </div>
+            
+            <div class="edit-area" data-story-id="{{ user_story.id }}">
+                <textarea class="edit-textarea">{{ user_story.content }}</textarea>
+                <div class="edit-buttons">
+                    <button class="btn save-edit" data-story-id="{{ user_story.id }}">Save</button>
+                    <button class="btn cancel-edit" data-story-id="{{ user_story.id }}">Cancel</button>
+                </div>
+            </div>
 
-{% else %}
+            <div class="dashboard-actions">
+                <button class="btn edit-btn" data-story-id="{{ user_story.id }}">Edit Your Story</button>
+                <a href="{{ url_for('main.stories') }}" class="btn view_stories_btn">View All Stories</a>
+            </div>
+        </div>
+    {% else %}
         <h3>Submit Your Story</h3>
         <form action="{{ url_for('main.submit_story') }}" method="POST" class="story-form">
             <p>
@@ -35,6 +46,49 @@
         </form>
         <small style="color: #666; text-align: right; display: block;">Note: You must submit your story before you can view others' submissions.</small>
     {% endif %}
-
 </div>
+
+{% if user_story %}
+<script>
+document.addEventListener('click', function(e) {
+    const storyId = "{{ user_story.id }}";
+
+    // Show edit area
+    if (e.target.matches('.edit-btn')) {
+        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'block';
+        document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'none';
+        e.target.style.display = 'none';
+    }
+
+    // Cancel edit
+    if (e.target.matches('.cancel-edit')) {
+        document.querySelector(`.edit-area[data-story-id='${storyId}']`).style.display = 'none';
+        document.querySelector(`.story-content[data-story-id='${storyId}']`).style.display = 'block';
+        document.querySelector('.edit-btn').style.display = 'inline-block';
+    }
+
+    // Save edit
+    if (e.target.matches('.save-edit')) {
+        const newContent = document.querySelector(`.edit-area[data-story-id='${storyId}'] textarea`).value.trim();
+        if (newContent.length < 10) {
+            alert('Story must be at least 10 characters.');
+            return;
+        }
+
+        fetch(`/stories/${storyId}/edit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: newContent })
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                document.querySelector(`.story-content[data-story-id='${storyId}']`).textContent = data.content;
+                document.querySelector('.cancel-edit').click();
+            } else {
+                alert(data.message || 'Failed to update story.');
+            }
+        });
+    }
+});
+</script>
+{% endif %}
 {% endblock %}

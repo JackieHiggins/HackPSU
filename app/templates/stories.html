@@ -2,9 +2,7 @@
 {% block content %}
 
 <div class="content-card">
-    <h2 class="section-title">ALL STORIES</h2>
-
-    <h2 class="section-title" style="margin-bottom: 0.5rem; font-size: 1.5rem;">Today's Prompt</h2>
+    <h2 class="section-title">TODAY'S STORIES</h2>
 
     <div class="emoji-prompt stories-page-prompt">
         {% for emoji in prompt_emojis.split() %}
@@ -12,290 +10,62 @@
         {% endfor %}
     </div>
 
-    {% if ordered_stories %}
+    {% if stories %}
         <div class="stories-container">
-            {% for s in ordered_stories %}
-                <div class="story-card" id="story-{{ s.id }}">
-                    <div class="story-header">
-                        <div class="author-info">
-                            {% if s.is_you %}
-                                <span class="author-name is-you">Your Story</span>
-                            {% else %}
-                                <span class="author-name other">{{ s.username }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="story-meta">
-                            <span class="story-timestamp">{{ s.timestamp }}</span>
-                            <div class="story-actions">
-                                <button class="heart-btn" data-story-id="{{ s.id }}" aria-label="like">
-                                    <span class="heart-icon {% if s.id in liked_stories %}liked{% else %}not-liked{% endif %}">❤</span>
-                                    <span class="likes-count" data-story-id="{{ s.id }}">{{ s.likes }}</span>
-                                </button>
-
-                                {% if s.is_you %}
-                                    <button class="edit-btn" data-story-id="{{ s.id }}">Edit</button>
-                                {% endif %}
+            {% for story in stories %}
+                <div class="story-card-link-wrapper">
+                    <a href="{{ url_for('main.story_detail', story_id=story.id) }}" class="story-card-link">
+                        <div class="story-card" id="story-{{ story.id }}">
+                            <div class="story-header">
+                                <div class="author-info">
+                                    <span class="author-name {% if story.user_id == current_user.id %}is-you{% endif %}">
+                                        {{ story.author.username }}
+                                    </span>
+                                </div>
+                                <div class="story-meta">
+                                    <span class="story-timestamp">{{ story.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                                </div>
+                            </div>
+                            <div class="story-content truncated">
+                                {{ story.content }}
+                            </div>
+                            <div class="story-card-footer">
+                                Click to read more and comment...
                             </div>
                         </div>
+                    </a>
+                    <div class="story-actions-standalone">
+                        <button class="heart-btn" data-story-id="{{ story.id }}" aria-label="like">
+                             <span class="heart-icon {% if story.id in liked_stories %}liked{% endif %}">❤</span>
+                            <span class="likes-count">{{ story.likes }}</span>
+                        </button>
                     </div>
-
-                    <div class="story-content {% if s.content|length > 300 %}truncated{% endif %}" data-story-id="{{ s.id }}">
-                        {{ s.content }}
-                    </div>
-
-                    {% if s.content|length > 300 %}
-                        <a href="#" class="expand-link" data-story-id="{{ s.id }}">Read more</a>
-                    {% endif %}
-
-                    <div class="edit-area" id="edit-area-{{ s.id }}">
-                        <textarea class="edit-textarea" id="edit-text-{{ s.id }}">{{ s.content }}</textarea>
-                        <div class="edit-buttons">
-                            <button class="btn save-edit" data-story-id="{{ s.id }}">Save</button>
-                            <button class="btn cancel-edit" data-story-id="{{ s.id }}">Cancel</button>
-                        </div>
-                    </div>
-
-                    <div class="comments-section">
-                        <h4 class="comments-title">Comments</h4>
-                        <div class="comments-container" id="comments-for-{{ s.id }}">
-                            {% for comment in s.comments %}
-                                <div class="comment-card" id="comment-{{ comment.id }}">
-                                    <p class="comment-meta">
-                                        <strong>{{ comment.author.username }}</strong>
-                                        <small>{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
-                                    </p>
-                                    <div class="comment-content" data-comment-id="{{ comment.id }}">{{ comment.content }}</div>
-
-                                    <div class="comment-actions">
-                                        <button class="comment-like-btn" data-comment-id="{{ comment.id }}">
-                                            <span class="comment-heart-icon {% if comment.id in liked_comments %}liked{% endif %}">❤</span>
-                                            <span class="comment-likes-count">{{ comment.likes }}</span>
-                                        </button>
-                                        {% if comment.user_id == current_user.id %}
-                                        <button class="comment-edit-btn" data-comment-id="{{ comment.id }}">Edit</button>
-                                        {% endif %}
-                                    </div>
-
-                                    <div class="comment-edit-area" data-comment-id="{{ comment.id }}">
-                                        <textarea class="comment-edit-textarea">{{ comment.content }}</textarea>
-                                        <button class="btn btn-small save-comment-edit" data-comment-id="{{ comment.id }}">Save</button>
-                                        <button class="btn btn-small btn-secondary cancel-comment-edit" data-comment-id="{{ comment.id }}">Cancel</button>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-
-                        <form class="comment-form" data-story-id="{{ s.id }}">
-                            <textarea name="content" placeholder="Add a comment..." required></textarea>
-                            <button type="submit" class="btn">Comment</button>
-                        </form>
-                    </div>
-
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="no-stories">No stories found for this prompt.</p>
+        <p class="no-stories">No stories found for this prompt yet.</p>
     {% endif %}
 </div>
 
-<div id="story-modal" class="story-modal">
-    <div class="modal-content">
-        <button id="modal-close" class="modal-close">✕</button>
-        <div id="modal-author" class="modal-author"></div>
-        <div id="modal-timestamp" class="modal-timestamp"></div>
-        <div id="modal-content" class="modal-story-content"></div>
-    </div>
-</div>
-
 <script>
-document.addEventListener('click', function(e){
-    // Like button
-    if (e.target.closest('.heart-btn')) {
+document.addEventListener('click', function(e) {
+    const likeBtn = e.target.closest('.heart-btn');
+    if (likeBtn) {
         e.preventDefault();
-        const btn = e.target.closest('.heart-btn');
-        const storyId = parseInt(btn.dataset.storyId, 10);
-        fetch(`{{ url_for('main.like_story', story_id=0) }}`.replace('/0/', `/${storyId}/`), {
+        const storyId = likeBtn.dataset.storyId;
+        fetch(`/stories/${storyId}/like`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'same-origin'
         }).then(r => r.json()).then(data => {
-            if (data && !data.error) {
-                const countEl = document.querySelector('.likes-count[data-story-id="'+storyId+'"]');
-                const heartIcon = btn.querySelector('.heart-icon');
-                if (countEl) countEl.textContent = data.likes;
-                if (data.liked) {
-                    heartIcon.classList.add('liked');
-                    heartIcon.classList.remove('not-liked');
-                } else {
-                    heartIcon.classList.add('not-liked');
-                    heartIcon.classList.remove('liked');
-                }
+            if (data && data.error === undefined) {
+                likeBtn.querySelector('.likes-count').textContent = data.likes;
+                const heartIcon = likeBtn.querySelector('.heart-icon');
+                heartIcon.classList.toggle('liked', data.liked);
             }
         });
     }
-
-    // Expand / Read more
-    if (e.target.matches('.expand-link')) {
-        e.preventDefault();
-        const id = e.target.dataset.storyId;
-        const container = document.querySelector('#story-' + id);
-        const author = container.querySelector('.author-name').textContent;
-        const timestamp = container.querySelector('.story-timestamp').textContent;
-        const content = container.querySelector('.story-content').textContent;
-
-        document.getElementById('modal-author').textContent = author;
-        document.getElementById('modal-timestamp').textContent = timestamp;
-        document.getElementById('modal-content').textContent = content;
-
-        const modal = document.getElementById('story-modal');
-        modal.style.display = 'flex';
-    }
-
-    // Close modal
-    if (e.target.matches('.modal-close') || e.target.matches('.story-modal')) {
-        document.getElementById('story-modal').style.display = 'none';
-    }
-
-    // Edit button
-    if (e.target.matches('.edit-btn')) {
-        const id = e.target.dataset.storyId;
-        document.getElementById('edit-area-' + id).style.display = 'block';
-        e.target.style.display = 'none';
-    }
-
-    // Cancel edit
-    if (e.target.matches('.cancel-edit')) {
-        const id = e.target.dataset.storyId;
-        document.getElementById('edit-area-' + id).style.display = 'none';
-        document.querySelector('.edit-btn[data-story-id="'+id+'"]').style.display = 'inline-block';
-    }
-
-    if (e.target.matches('.save-edit')) {
-        const id = e.target.dataset.storyId;
-        const newContent = document.getElementById('edit-text-' + id).value.trim();
-        if (!newContent || newContent.length < 10) {
-            alert('Edited story must be at least 10 characters.');
-            return;
-        }
-        fetch(`{{ url_for('main.edit_story', story_id=0) }}`.replace('/0/', `/${id}/`), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'same-origin',
-            body: JSON.stringify({ content: newContent })
-        }).then(r => r.json()).then(data => {
-            if (data && data.success) {
-                const container = document.getElementById('story-' + id);
-                container.querySelector('.story-content').textContent = data.content;
-                document.getElementById('edit-area-' + id).style.display = 'none';
-                document.querySelector('.edit-btn[data-story-id="'+id+'"]').style.display = 'inline-block';
-            } else {
-                alert(data.message || 'Failed to update story.');
-            }
-        }).catch(() => alert('Network error.'));
-    }
-
-    const likeBtn = e.target.closest('.comment-like-btn');
-    if (likeBtn) {
-        const commentId = likeBtn.dataset.commentId;
-        fetch(`/comment/${commentId}/like`, { method: 'POST' })
-            .then(res => res.json())
-            .then(data => {
-                likeBtn.querySelector('.comment-likes-count').textContent = data.likes;
-                const heart = likeBtn.querySelector('.comment-heart-icon');
-                if (data.liked) {
-                    heart.classList.add('liked');
-                } else {
-                    heart.classList.remove('liked');
-                }
-            });
-    }
-
-    // --- NEW: Show Comment Edit Area ---
-    const editBtn = e.target.closest('.comment-edit-btn');
-    if (editBtn) {
-        const commentId = editBtn.dataset.commentId;
-        document.querySelector(`.comment-edit-area[data-comment-id='${commentId}']`).style.display = 'block';
-        document.querySelector(`.comment-content[data-comment-id='${commentId}']`).style.display = 'none';
-        editBtn.style.display = 'none';
-    }
-
-    // --- NEW: Cancel Comment Edit ---
-    const cancelBtn = e.target.closest('.cancel-comment-edit');
-    if (cancelBtn) {
-        const commentId = cancelBtn.dataset.commentId;
-        document.querySelector(`.comment-edit-area[data-comment-id='${commentId}']`).style.display = 'none';
-        document.querySelector(`.comment-content[data-comment-id='${commentId}']`).style.display = 'block';
-        document.querySelector(`.comment-edit-btn[data-comment-id='${commentId}']`).style.display = 'inline-block';
-    }
-
-    // --- NEW: Save Comment Edit ---
-    const saveBtn = e.target.closest('.save-comment-edit');
-    if (saveBtn) {
-        const commentId = saveBtn.dataset.commentId;
-        const newContent = document.querySelector(`.comment-edit-area[data-comment-id='${commentId}'] textarea`).value;
-        fetch(`/comment/${commentId}/edit`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: newContent })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                document.querySelector(`.comment-content[data-comment-id='${commentId}']`).textContent = data.content;
-                // Use a different cancel button selector to avoid conflict
-                const associatedCancelBtn = document.querySelector(`.cancel-comment-edit[data-comment-id='${commentId}']`);
-                if(associatedCancelBtn) associatedCancelBtn.click();
-            } else {
-                alert(data.message || 'Error saving comment.');
-            }
-        });
-    }
-});
-
-// --- NEW: Handle Comment Submission ---
-document.querySelectorAll('.comment-form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const storyId = this.dataset.storyId;
-        const formData = new FormData(this);
-
-        fetch(`/story/${storyId}/comment`, {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                const newComment = data.comment;
-                const commentsContainer = document.getElementById(`comments-for-${storyId}`);
-                const commentHTML = `
-                    <div class="comment-card" id="comment-${newComment.id}">
-                        <p class="comment-meta">
-                            <strong>${newComment.username}</strong> <small>${newComment.timestamp}</small>
-                        </p>
-                        <div class="comment-content" data-comment-id="${newComment.id}">${newComment.content}</div>
-                        <div class="comment-actions">
-                            <button class="comment-like-btn" data-comment-id="${newComment.id}">
-                                <span class="comment-heart-icon">❤</span>
-                                <span class="comment-likes-count">0</span>
-                            </button>
-                            <button class="comment-edit-btn" data-comment-id="${newComment.id}">Edit</button>
-                        </div>
-                        <div class="comment-edit-area" data-comment-id="${newComment.id}">
-                            <textarea class="comment-edit-textarea">${newComment.content}</textarea>
-                            <button class="btn btn-small save-comment-edit" data-comment-id="${newComment.id}">Save</button>
-                            <button class="btn btn-small btn-secondary cancel-comment-edit" data-comment-id="${newComment.id}">Cancel</button>
-                        </div>
-                    </div>
-                `;
-                commentsContainer.insertAdjacentHTML('beforeend', commentHTML);
-                this.reset();
-            } else {
-                alert(data.message || 'Could not post comment.');
-            }
-        });
-    });
 });
 </script>
 
